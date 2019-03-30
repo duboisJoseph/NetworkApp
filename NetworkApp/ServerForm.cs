@@ -83,7 +83,7 @@ namespace NetworkApp
       //if array element at index i = 1 then that index is the integer ID of an active client socket.
       connectedIDs = new int[max_connections];
 
-      Console.WriteLine("Here1");
+      Console.WriteLine("Here");
 
       //Initalize Array to 0s
       for(int i = 0; i < max_connections; i++) { connectedIDs[i] = 0;}
