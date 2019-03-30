@@ -42,16 +42,18 @@
             this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.fileInformationGrid = new System.Windows.Forms.DataGridView();
-            this.button2 = new System.Windows.Forms.Button();
             this.File = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FileType = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FileLocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button2 = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.localAddress = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.fileInformationGrid)).BeginInit();
             this.SuspendLayout();
             // 
@@ -105,10 +107,10 @@
             // LogBox
             // 
             this.LogBox.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.LogBox.Location = new System.Drawing.Point(12, 136);
+            this.LogBox.Location = new System.Drawing.Point(12, 166);
             this.LogBox.Name = "LogBox";
             this.LogBox.ReadOnly = true;
-            this.LogBox.Size = new System.Drawing.Size(468, 132);
+            this.LogBox.Size = new System.Drawing.Size(468, 101);
             this.LogBox.TabIndex = 5;
             this.LogBox.Text = "";
             // 
@@ -116,7 +118,7 @@
             // 
             this.LogWindowLabel.AutoSize = true;
             this.LogWindowLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.LogWindowLabel.Location = new System.Drawing.Point(12, 116);
+            this.LogWindowLabel.Location = new System.Drawing.Point(12, 146);
             this.LogWindowLabel.Name = "LogWindowLabel";
             this.LogWindowLabel.Size = new System.Drawing.Size(71, 17);
             this.LogWindowLabel.TabIndex = 6;
@@ -127,7 +129,7 @@
             // 
             this.BeginConnectionBtn.Location = new System.Drawing.Point(395, 42);
             this.BeginConnectionBtn.Name = "BeginConnectionBtn";
-            this.BeginConnectionBtn.Size = new System.Drawing.Size(75, 23);
+            this.BeginConnectionBtn.Size = new System.Drawing.Size(85, 23);
             this.BeginConnectionBtn.TabIndex = 7;
             this.BeginConnectionBtn.Text = "Connect";
             this.BeginConnectionBtn.UseVisualStyleBackColor = true;
@@ -137,7 +139,7 @@
             // 
             this.CmdLbl.AutoSize = true;
             this.CmdLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CmdLbl.Location = new System.Drawing.Point(7, 77);
+            this.CmdLbl.Location = new System.Drawing.Point(12, 115);
             this.CmdLbl.Name = "CmdLbl";
             this.CmdLbl.Size = new System.Drawing.Size(40, 17);
             this.CmdLbl.TabIndex = 8;
@@ -145,7 +147,7 @@
             // 
             // CmdField
             // 
-            this.CmdField.Location = new System.Drawing.Point(53, 74);
+            this.CmdField.Location = new System.Drawing.Point(53, 114);
             this.CmdField.Name = "CmdField";
             this.CmdField.Size = new System.Drawing.Size(336, 20);
             this.CmdField.TabIndex = 9;
@@ -153,9 +155,9 @@
             // 
             // CmdBtn
             // 
-            this.CmdBtn.Location = new System.Drawing.Point(395, 71);
+            this.CmdBtn.Location = new System.Drawing.Point(395, 115);
             this.CmdBtn.Name = "CmdBtn";
-            this.CmdBtn.Size = new System.Drawing.Size(75, 23);
+            this.CmdBtn.Size = new System.Drawing.Size(85, 23);
             this.CmdBtn.TabIndex = 10;
             this.CmdBtn.Text = "Send";
             this.CmdBtn.UseVisualStyleBackColor = true;
@@ -163,7 +165,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(16, 481);
+            this.button1.Location = new System.Drawing.Point(12, 414);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(156, 23);
             this.button1.TabIndex = 11;
@@ -175,7 +177,7 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.label1.Location = new System.Drawing.Point(12, 283);
+            this.label1.Location = new System.Drawing.Point(12, 270);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(95, 17);
             this.label1.TabIndex = 13;
@@ -188,21 +190,11 @@
             this.File,
             this.FileType,
             this.FileLocation});
-            this.fileInformationGrid.Location = new System.Drawing.Point(16, 303);
+            this.fileInformationGrid.Location = new System.Drawing.Point(16, 300);
             this.fileInformationGrid.Name = "fileInformationGrid";
-            this.fileInformationGrid.Size = new System.Drawing.Size(458, 173);
+            this.fileInformationGrid.Size = new System.Drawing.Size(458, 99);
             this.fileInformationGrid.TabIndex = 14;
             this.fileInformationGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.fileInformationGrid_CellContentClick);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(363, 481);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(107, 23);
-            this.button2.TabIndex = 15;
-            this.button2.Text = "Refresh File List";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.refreshFileList);
             // 
             // File
             // 
@@ -221,19 +213,30 @@
             this.FileLocation.Name = "FileLocation";
             this.FileLocation.Width = 200;
             // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(373, 414);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(107, 23);
+            this.button2.TabIndex = 15;
+            this.button2.Text = "Refresh File List";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.refreshFileList);
+            // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(21, 530);
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label2.Location = new System.Drawing.Point(13, 77);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(60, 13);
+            this.label2.Size = new System.Drawing.Size(78, 17);
             this.label2.TabIndex = 17;
             this.label2.Text = "Host Name";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(338, 530);
+            this.label4.Location = new System.Drawing.Point(289, 77);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(61, 13);
             this.label4.TabIndex = 19;
@@ -241,7 +244,7 @@
             // 
             // localAddress
             // 
-            this.localAddress.Location = new System.Drawing.Point(24, 547);
+            this.localAddress.Location = new System.Drawing.Point(101, 74);
             this.localAddress.Name = "localAddress";
             this.localAddress.ReadOnly = true;
             this.localAddress.Size = new System.Drawing.Size(187, 20);
@@ -273,16 +276,36 @@
             "T1",
             "T3",
             "Carrier Pigeon"});
-            this.comboBox1.Location = new System.Drawing.Point(337, 547);
+            this.comboBox1.Location = new System.Drawing.Point(359, 71);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(121, 21);
             this.comboBox1.TabIndex = 25;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.label3.Location = new System.Drawing.Point(9, 451);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(166, 17);
+            this.label3.TabIndex = 26;
+            this.label3.Text = "Search for File on Server";
+            this.label3.Click += new System.EventHandler(this.label3_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(188, 451);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(292, 20);
+            this.textBox1.TabIndex = 27;
             // 
             // ClientForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(492, 604);
+            this.ClientSize = new System.Drawing.Size(502, 675);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.textBox4);
@@ -339,5 +362,7 @@
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
