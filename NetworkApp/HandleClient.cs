@@ -48,80 +48,79 @@ namespace NetworkApp
       Byte[] sendBytes = null;
       string serverResponse = null;
       requestCount = 0;
+      networkStream = clientSocket.GetStream();
 
       bool keepLiving = true; //if true thread will persist, if false thread will close
       bool msgToSend = true; //if there is a new message to send will be set to true. 
       int cmdCt = -1; //keeps track if the main thread of the server has sent a new command.
-      var consumer = new SharedMemory.SharedArray<byte>("ParentToChildCmdArray"); //shared memory location used to communicate between the main server thread and the child threads. 
-
-      while (keepLiving)
+      //var consumer = new SharedMemory.SharedArray<byte>("ParentToChildCmdArray"); //shared memory location used to communicate between the main server thread and the child threads. 
+      using (var consumer = new SharedMemory.SharedArray<byte>("ParentToChildCmdArray"))
       {
-        byte[] cmd = new byte[40];
-        int i = 0;
-
-        serverResponse = "Connection Established" + DateTime.Now.ToString(); //Set Value of first message to send to client
-
-        foreach (byte b in consumer)
+        while (keepLiving)
         {
-          cmd[i] = b;
-          i++;
-        };
+          byte[] cmd = new byte[40];
+          int i = 0;
 
-        if ((cmd[0] == '!') && (cmd[1] > cmdCt)) //if is a command and not the previous command
-        {
-          cmdCt = cmd[1]; //adjust cmdCt counter so that this child thread only executes the cmd once.
-          msgToSend = true; //send a new message to the client
-          
-          string msg = System.Text.Encoding.ASCII.GetString(cmd,2,(i-2)); //extract cmd into a string
+          serverResponse = "Connection Established" + DateTime.Now.ToString(); //Set Value of first message to send to client
 
-          if (msg == "stop") //if we have recieved a stop command
+          foreach (byte b in consumer)
           {
-            serverResponse = "Server shutting down...";
-            keepLiving = false;
-          } else
+            cmd[i] = b;
+            i++;
+          };
+
+          if ((cmd[0] == '!') && (cmd[1] > cmdCt)) //if is a command and not the previous command
           {
-            serverResponse = msg;
-          }
-        }
-        
-        if(msgToSend)
-        {
-          try
-          {
-            networkStream = clientSocket.GetStream();
+            cmdCt = cmd[1]; //adjust cmdCt counter so that this child thread only executes the cmd once.
+            msgToSend = true; //send a new message to the client
 
-            /*Code handles reciving messages from client*/
+            string msg = System.Text.Encoding.ASCII.GetString(cmd, 2, (i - 2)); //extract cmd into a string
 
-            //TODO
-
-            //networkStream.Read(bytesFrom, 0, clientSocket.ReceiveBufferSize);
-            //dataFromClient = System.Text.Encoding.ASCII.GetString(bytesFrom);
-            //dataFromClient = dataFromClient.Substring(0, dataFromClient.IndexOf("$"));
-            //Console.WriteLine(" >> " + "From client-" + clNo + dataFromClient);
-
-
-            /*Code handles sending messages to client*/
-            serverResponse = "From server to client ( " + clNo + " ): " + serverResponse;
-            sendBytes = Encoding.ASCII.GetBytes(serverResponse);
-
-            networkStream.Write(sendBytes, 0, sendBytes.Length);
-            networkStream.Flush();
-
-
-            //networkStream.Close();
-            if (!keepLiving)
+            if (msg == "stop") //if we have recieved a stop command
             {
-              clientSocket.Close(); //close socket
-              networkStream.Close();//close data stream (allows for garbage collection)
+              serverResponse = "Server shutting down...";
+              keepLiving = false;
+            }
+            else
+            {
+              serverResponse = " .beat. ";//;
             }
           }
-          catch (Exception ex)
+
+          if (msgToSend)
           {
-            Console.WriteLine(" >> " + ex.ToString());
+            try
+            {
+              /*Code handles sending messages to client*/
+              serverResponse = "From server to client ( " + clNo + " ): " + serverResponse;
+              sendBytes = Encoding.ASCII.GetBytes(serverResponse);
+              if (networkStream.CanWrite)
+              {
+                networkStream.Write(sendBytes, 0, sendBytes.Length);
+              }
+              else
+              {
+                Console.WriteLine("Client Handler #" + clNo + " can't write");
+              }//networkStream.Flush();
+
+
+              //networkStream.Close();
+              if (!keepLiving)
+              {
+                clientSocket.Close(); //close socket
+                networkStream.Close();//close data stream (allows for garbage collection)
+              }
+            }
+            catch (Exception ex)
+            {
+              Console.WriteLine(" >> " + ex.ToString());
+              clientSocket.Close();
+              networkStream.Close();
+            }
+            msgToSend = false; //set to false so message is only sent once.
           }
-          msgToSend = false; //set to false so message is only sent once.
-        }       
+        }
       }
     }
-  }
-}
+  }//End of class
+}//End of NameSpace

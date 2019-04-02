@@ -74,7 +74,7 @@ namespace NetworkApp
       //Currently Hard port number could be user input driven
       Int32 portNum = 3333;
 
-      producer = new SharedArray<byte>("ParentToChildCmdArray", 40);
+      //producer = new SharedArray<byte>("ParentToChildCmdArrayNum2", 40);
 
       //array stores client socket connections
       clients = new TcpClient[max_connections];
@@ -113,51 +113,56 @@ namespace NetworkApp
     }
 
     private void MyTimer_tick(object Sender, EventArgs e) //called every timer tick (interval set in InitializeTimer)
-    { 
-      LogBox.Text += "\n" + "."; //output to server log.
-
-      TcpClient clientSocket; //create a TCP client object
-
-      if (shouldCountDown) //is server shutting down?
-      {
-        countDown--; //Decrement Countdown if server begins to shut down.
-      }
-      try
-      {
-        LogBox.Text += "\n" + "Waiting for connections..."; //output to server log.
-
-        if (server.Pending()) //if there is a client trying to connect to the server
+    {
+      while(true) { 
+        using (producer = new SharedArray<byte>("ParentToChildCmdArrayNum2", 40))
         {
-          clientSocket = server.AcceptTcpClient(); //accept the client connection
-          clientSocket.ReceiveBufferSize = 8192; //Set buffer size 
-          clientSocket.SendBufferSize = 8192;    //Set buffer size
+          LogBox.Text += "\n" + "."; //output to server log.
 
-          if (clientSocket != null) //if client connection was succssessful
+          TcpClient clientSocket; //create a TCP client object
+
+          if (shouldCountDown) //is server shutting down?
           {
-            for (int i = 0; i < max_connections; i++) //find an open client ID int TODO: in this loop we could update the server's table of clients table with client information
+            countDown--; //Decrement Countdown if server begins to shut down.
+          }
+          try
+          {
+            LogBox.Text += "\n" + "Waiting for connections..."; //output to server log.
+
+            if (server.Pending()) //if there is a client trying to connect to the server
             {
-              if (connectedIDs[i] < 1) //if id not taken 
+              clientSocket = server.AcceptTcpClient(); //accept the client connection
+              clientSocket.ReceiveBufferSize = 8192; //Set buffer size 
+              clientSocket.SendBufferSize = 8192;    //Set buffer size
+
+              if (clientSocket != null) //if client connection was succssessful
               {
-                byte[]cmd = System.Text.Encoding.ASCII.GetBytes("!"+"Connected to Server");
+                for (int i = 0; i < max_connections; i++) //find an open client ID int TODO: in this loop we could update the server's table of clients table with client information
+                {
+                  if (connectedIDs[i] < 1) //if id not taken 
+                  {
+                    byte[] cmd = System.Text.Encoding.ASCII.GetBytes("!" + "Connected to Server");
 
-                int j = 0;
-                foreach (byte b in cmd) { producer[i] = b; j++; }
+                    int j = 0;
+                    foreach (byte b in cmd) { producer[i] = b; j++; }
 
-                connectedIDs[i] = 1;//mark that ID as taken
+                    connectedIDs[i] = 1;//mark that ID as taken
 
-                HandleClient client = new HandleClient(); //create new client handler
-            
-                client.StartClient(clientSocket, Convert.ToString(i)); //start new client handler with the socket connection and the client ID i
-                break;
+                    HandleClient client = new HandleClient(); //create new client handler
+
+                    client.StartClient(clientSocket, Convert.ToString(i)); //start new client handler with the socket connection and the client ID i
+                    break;
+                  }
+                }
               }
             }
           }
+          catch (Exception z)
+          {
+            LogBox.Text += "\n" + z.ToString();
+          }
         }
       }
-      catch (Exception z)
-      {
-        LogBox.Text += "\n" + z.ToString();
-      }   
     }
 
     private void LogBox_TextChanged(object sender, EventArgs e)

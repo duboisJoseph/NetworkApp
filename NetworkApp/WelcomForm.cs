@@ -24,9 +24,11 @@ namespace NetworkApp
 
     private void ServerModeBtn_Click(object sender, EventArgs e)
     {
-      ServerForm server = new ServerForm();
-      server.ShowDialog(this);
-      server.Dispose();
+      Greetings_lbl.Text = "SERVER NOW RUNNING";
+      ServerModeBtn.Enabled = false;
+      ClientModeBtn.Enabled = false;
+      Server server = new Server();
+
     }
 
     private void ClientModeBtn_Click(object sender, EventArgs e)
