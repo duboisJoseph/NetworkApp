@@ -56,39 +56,39 @@ namespace NetworkApp
     FolderBrowserDialog FBD = new FolderBrowserDialog();
     string[] files;             //Anthony/Alec, this is the string of files that stores all the files in the local user's computer.
 
-        public ClientForm() //Constructor (called only once)
-        {
-            InitializeComponent(); //Loads UI
-            InitializeTimer(); //Sets up timer
-            GetLocalClientInformation();
-        }
+    public ClientForm() //Constructor (called only once)
+    {
+      InitializeComponent(); //Loads UI
+      InitializeTimer(); //Sets up timer
+      GetLocalClientInformation();
+    }
 
-        private void GetLocalClientInformation()
-        {
-           //Get HostName
-            localAddress.Clear();
-            try
-            {
-                // Get the local computer host name.
-                String hostName = Dns.GetHostName();
-                localAddress.Text = hostName;
-            }
-            catch (SocketException e)
-            {
-                Console.WriteLine("SocketException caught!!!");
-                Console.WriteLine("Source : " + e.Source);
-                Console.WriteLine("Message : " + e.Message);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("Exception caught!!!");
-                Console.WriteLine("Source : " + e.Source);
-                Console.WriteLine("Message : " + e.Message);
-            }
+    private void GetLocalClientInformation()
+    {
+      //Get HostName
+      localAddress.Clear();
+      try
+      {
+        // Get the local computer host name.
+        String hostName = Dns.GetHostName();
+        localAddress.Text = hostName;
+      }
+      catch (SocketException e)
+      {
+        Console.WriteLine("SocketException caught!!!");
+        Console.WriteLine("Source : " + e.Source);
+        Console.WriteLine("Message : " + e.Message);
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine("Exception caught!!!");
+        Console.WriteLine("Source : " + e.Source);
+        Console.WriteLine("Message : " + e.Message);
+      }
 
            
 
-        }
+    }
 
     private void InitializeTimer()
     {
@@ -176,61 +176,61 @@ namespace NetworkApp
 
     } //could be used for input validation
 
-        private void LogWindowLabel_Click(object sender, EventArgs e)
-        {
+    private void LogWindowLabel_Click(object sender, EventArgs e)
+    {
 
+    }
+
+    private void fileListBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
+    }
+
+    //"Choose Sharing Directory" Button Handler:
+    private void ChooseSharingDirectoryClick(object sender, EventArgs e)
+    {
+
+      if (FBD.ShowDialog() == DialogResult.OK)
+      {
+        //Get all files in directory:
+        files = Directory.GetFiles(FBD.SelectedPath);          
+
+        fileInformationGrid.Rows.Clear();
+        //Show files in the listbox:
+        foreach(string file in files)
+        {
+            fileInformationGrid.Rows.Add(Path.GetFileName(file)," ",file);
         }
+      }
+    }
 
-        private void fileListBox_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        //"Choose Sharing Directory" Button Handler:
-        private void ChooseSharingDirectoryClick(object sender, EventArgs e)
-        {
-
-            if (FBD.ShowDialog() == DialogResult.OK)
-            {
-                //Get all files in directory:
-                files = Directory.GetFiles(FBD.SelectedPath);          
-
-                fileInformationGrid.Rows.Clear();
-                //Show files in the listbox:
-                foreach(string file in files)
-                {
-                    fileInformationGrid.Rows.Add(Path.GetFileName(file)," ",file);
-                }
-            }
-        }
-
-        //"Refresh File List" Button Handler:
-        private void refreshFileList(object sender, EventArgs e)
-        {
-            //Get all files in directory:
+    //"Refresh File List" Button Handler:
+    private void RefreshFileList(object sender, EventArgs e)
+    {
+      //Get all files in directory:
             
 
-            fileInformationGrid.Rows.Clear();
-            //Show files in the listbox:
-            if (files != null)
-            {
-                files = Directory.GetFiles(FBD.SelectedPath);
-                fileInformationGrid.Rows.Clear();
-                foreach (string file in files)
-                {
-                    fileInformationGrid.Rows.Add(Path.GetFileName(file), Path.GetExtension(file), file);
-                }
-            }
-        }
-
-        private void fileInformationGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+      fileInformationGrid.Rows.Clear();
+      //Show files in the listbox:
+      if (files != null)
+      {
+        files = Directory.GetFiles(FBD.SelectedPath);
+        fileInformationGrid.Rows.Clear();
+        foreach (string file in files)
         {
-
+            fileInformationGrid.Rows.Add(Path.GetFileName(file), Path.GetExtension(file), file);
         }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
+      }
     }
+
+    private void fileInformationGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
+    {
+
+    }
+
+    private void label3_Click(object sender, EventArgs e)
+    {
+
+    }
+  }
 }
