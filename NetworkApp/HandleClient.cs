@@ -150,7 +150,7 @@ namespace NetworkApp
             try
             {
               /*Code handles sending messages to client*/
-              serverResponse = "From server to client ( " + clNo + " ): " + serverResponse;
+              serverResponse = "id"+clNo+"From server to client ( " + clNo + " ): " + serverResponse;
               sendBytes = Encoding.ASCII.GetBytes(serverResponse);
               if (networkStream.CanWrite)
               {

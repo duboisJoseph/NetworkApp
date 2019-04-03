@@ -112,10 +112,10 @@ namespace NetworkApp
         try
         {
           while (ns.DataAvailable)
-          {
-            Console.WriteLine("Blocking");
+          { 
             bytesRead = ns.Read(bytes, 0, bytes.Length); //read bytes from data stream
-            LogBox.Text += "\n >>" + Encoding.ASCII.GetString(bytes, 0, bytesRead); //convert bytes to string and output to log window
+            serverGivenID = int.Parse(Encoding.ASCII.GetString(bytes, 0, 3));
+            LogBox.Text += "\n >>" + Encoding.ASCII.GetString(bytes, 3, bytesRead); //convert bytes to string and output to log window
           }
         }
         catch (Exception z)
