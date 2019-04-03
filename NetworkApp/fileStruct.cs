@@ -4,6 +4,8 @@ using System.Text;
 
 namespace NetworkApp
 {
+
+  [Serializable]
   public class FileStruct
   {
     string fileName;
@@ -17,7 +19,7 @@ namespace NetworkApp
       return fileName;
     }
 
-    private void SetFileName(string name)
+    public void SetFileName(string name)
     {
       fileName = name;
     }

@@ -17,6 +17,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -142,6 +143,25 @@ namespace NetworkApp
             else
             {
               serverResponse = " .beat. ";//;
+            }
+          }
+
+          if(networkStream.CanRead)
+          {
+            if (networkStream.DataAvailable)
+            {
+             
+              
+              Stream fileStream = File.OpenWrite("hotdog.bin");
+
+              int thisRead = 0;
+              while (true)
+              {
+                thisRead = networkStream.Read(sendBytes, 0, thisRead);
+                if (thisRead == 0) break;
+              }
+              fileStream.Close();
+              
             }
           }
 

@@ -58,6 +58,7 @@ namespace NetworkApp
     string[] files;             //Anthony/Alec, this is the string of files that stores all the files in the local user's computer.
 
     List<FileStruct> localFileList = new List<FileStruct>();
+    ClientInfo localHostInfo;
 
     public ClientForm() 
     {
@@ -70,11 +71,14 @@ namespace NetworkApp
     {
       //Get HostName
       localAddress.Clear();
+
+      localHostInfo = new ClientInfo(serverGivenID);
       try
       {
         // Get the local computer host name.
-        String hostName = Dns.GetHostName();
-        localAddress.Text = hostName;
+        localHostInfo.dnsName = Dns.GetHostName();
+        localAddress.Text = localHostInfo.dnsName;
+        
       }
       catch (SocketException e)
       {
@@ -106,7 +110,6 @@ namespace NetworkApp
 
     private void MyTimer_tick(object Sender, EventArgs e) //Event handler for Timer ticks.
     {
-      LogBox.Text += "\n" + "."; //output to log window
       if (ns.CanRead)
       {
         try
@@ -114,8 +117,9 @@ namespace NetworkApp
           while (ns.DataAvailable)
           { 
             bytesRead = ns.Read(bytes, 0, bytes.Length); //read bytes from data stream
-            serverGivenID = int.Parse(Encoding.ASCII.GetString(bytes, 0, 3));
-            LogBox.Text += "\n >>" + Encoding.ASCII.GetString(bytes, 3, bytesRead); //convert bytes to string and output to log window
+            serverGivenID = int.Parse(Encoding.ASCII.GetString(bytes, 2, 1));
+            LogBox.Text += "\n "+serverGivenID+">>" + Encoding.ASCII.GetString(bytes, 3, bytesRead); //convert bytes to string and output to log window
+            localHostInfo.clientID = serverGivenID;
           }
         }
         catch (Exception z)
@@ -157,6 +161,8 @@ namespace NetworkApp
         {
           LogBox.Text += "\n" + "Connection Complete!";//Output to log window
           ns = client.GetStream(); //connect data stream to client socket
+          button1.Enabled = true;
+          button2.Enabled = true;
           MyTimer.Enabled = true; //Start timer          
         }
         else
@@ -170,20 +176,7 @@ namespace NetworkApp
       }
     }
 
-    private void CmdBtn_Click(object sender, EventArgs e)
-    {
-      //TODO need to develop function so that when the send command button is pressed the client writes its command string to the server 
-      if (ns.CanWrite)
-      {
-        byte[] outStream = System.Text.Encoding.ASCII.GetBytes(CmdField.Text);
-        ns.Write(outStream, 0, outStream.Length);
-      }
-      else
-      {
-        LogBox.Text += "\n>>" + "Unable to write to stream"; //Output to log window
-      }
-      //ns.Flush();
-    }
+
 
     private void CmdBox_TextChanged(object sender, EventArgs e)
     {
@@ -211,32 +204,36 @@ namespace NetworkApp
 
         fileInformationGrid.Rows.Clear();
         //Show files in the listbox:
+        int fid = 0;
         foreach (string file in files)
         {
-          fileInformationGrid.Rows.Add(Path.GetFileName(file), " ", file);
+          fileInformationGrid.Rows.Add(Path.GetFileName(file), Path.GetExtension(file), file);
+          FileStruct f = new FileStruct(Path.GetFileName(file), Path.GetExtension(file), fid, serverGivenID);
+          localFileList.Add(f);
+          fid++;
         }
+        SerializeFileList();
       }
     }
 
     //"Refresh File List" Button Handler:
     private void RefreshFileList(object sender, EventArgs e)
     {
-      //Get all files in directory:
-
-
       fileInformationGrid.Rows.Clear();
       //Show files in the listbox:
       if (files != null)
       {
         files = Directory.GetFiles(FBD.SelectedPath);
         fileInformationGrid.Rows.Clear();
-        int fileID = 0;
+        int fid = 0;
         foreach (string file in files)
         {
           fileInformationGrid.Rows.Add(Path.GetFileName(file), Path.GetExtension(file), file);
-          FileStruct localFile = new FileStruct(Path.GetFileName(file),Path.GetExtension(file),fileID,serverGivenID);
-          fileID++;
+          FileStruct f = new FileStruct(Path.GetFileName(file), Path.GetExtension(file), fid, serverGivenID);
+          localFileList.Add(f);
+          fid++;
         }
+        SerializeFileList();
       }
     }
 
@@ -268,6 +265,78 @@ namespace NetworkApp
 
     private void label3_Click(object sender, EventArgs e)
     {
+
+    }
+
+    private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+    {
+      localHostInfo.connType = comboBox1.Text;
+    }
+
+    private void HostIpBox_TextChanged(object sender, EventArgs e)
+    {
+      localHostInfo.ipAddr = HostIpBox.Text;
+    }
+
+    private void HostPortBox_TextChanged(object sender, EventArgs e)
+    {
+      Int32 portNum; //Port number
+
+      if (Int32.TryParse(HostPortBox.Text, out portNum)) //if able to parse field entry into a portNum continue
+      {
+        localHostInfo.portNum = portNum;
+      }
+    }
+
+    private void BeginHostBtn_Click(object sender, EventArgs e)
+    {
+
+      //Serializer.Save("ClientInfo.bin", localHostInfo);
+      /*
+      FileStruct f = new FileStruct("please.jpg", "jpg", 0, 0);
+      localFileList.Add(f);
+      SerializeFileList();
+      List<FileStruct> temp = new List<FileStruct>();
+      temp = Serializer.Load<List<FileStruct>>("ServerFileList.bin");
+      foreach(FileStruct l in temp)
+      {
+        HostIpBox.Text = l.GetFileName();
+      }
+      */
+
+      Stream fileStream = File.OpenRead("ServerFileList.bin");
+      byte[] outBuffer = new byte[fileStream.Length];
+      ns.Write(outBuffer,0,outBuffer.Length);
+
+      //create a tcplistener to listen for peer connections.
+    }
+
+    private void CmdBtn_Click(object sender, EventArgs e)
+    {
+       //TODO need to develop function so that when the send command button is pressed the client writes its command string to the server 
+      /* if (ns.CanWrite)
+       {
+         byte[] outStream = System.Text.Encoding.ASCII.GetBytes(CmdField.Text);
+         ns.Write(outStream, 0, outStream.Length);
+       }
+       else
+       {
+         LogBox.Text += "\n>>" + "Unable to write to stream"; //Output to log window
+       }
+       //ns.Flush();
+       */
+
+      
+      List<FileStruct> temp = new List<FileStruct>();
+      temp = Serializer.Load<List<FileStruct>>("hotdog.bin");
+      foreach (FileStruct l in temp)
+      {
+        CmdField.Text += l.GetFileName();
+
+        //l.SetFileName("Thank you!.txt");
+      }
+      //Serializer.Save("ServerFileList.bin", temp);
+      
 
     }
   }

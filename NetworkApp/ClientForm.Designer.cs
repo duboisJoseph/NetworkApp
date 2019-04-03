@@ -42,9 +42,6 @@
       this.button1 = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
       this.fileInformationGrid = new System.Windows.Forms.DataGridView();
-      this.File = new System.Windows.Forms.DataGridViewTextBoxColumn();
-      this.FileType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-      this.FileLocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.button2 = new System.Windows.Forms.Button();
       this.label2 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
@@ -54,6 +51,15 @@
       this.comboBox1 = new System.Windows.Forms.ComboBox();
       this.label3 = new System.Windows.Forms.Label();
       this.textBox1 = new System.Windows.Forms.TextBox();
+      this.HostIpBox = new System.Windows.Forms.TextBox();
+      this.HostPortBox = new System.Windows.Forms.TextBox();
+      this.label6 = new System.Windows.Forms.Label();
+      this.label7 = new System.Windows.Forms.Label();
+      this.HostHeaderLbl = new System.Windows.Forms.Label();
+      this.BeginHostBtn = new System.Windows.Forms.Button();
+      this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.FileType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.FileLocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
       ((System.ComponentModel.ISupportInitialize)(this.fileInformationGrid)).BeginInit();
       this.SuspendLayout();
       // 
@@ -165,6 +171,7 @@
       // 
       // button1
       // 
+      this.button1.Enabled = false;
       this.button1.Location = new System.Drawing.Point(12, 414);
       this.button1.Name = "button1";
       this.button1.Size = new System.Drawing.Size(156, 23);
@@ -187,7 +194,7 @@
       // 
       this.fileInformationGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
       this.fileInformationGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.File,
+            this.FileName,
             this.FileType,
             this.FileLocation});
       this.fileInformationGrid.Location = new System.Drawing.Point(16, 300);
@@ -196,25 +203,9 @@
       this.fileInformationGrid.TabIndex = 14;
       this.fileInformationGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.fileInformationGrid_CellContentClick);
       // 
-      // File
-      // 
-      this.File.HeaderText = "File Name";
-      this.File.Name = "File";
-      this.File.Width = 150;
-      // 
-      // FileType
-      // 
-      this.FileType.HeaderText = "File Type";
-      this.FileType.Name = "FileType";
-      // 
-      // FileLocation
-      // 
-      this.FileLocation.HeaderText = "File Location";
-      this.FileLocation.Name = "FileLocation";
-      this.FileLocation.Width = 200;
-      // 
       // button2
       // 
+      this.button2.Enabled = false;
       this.button2.Location = new System.Drawing.Point(373, 414);
       this.button2.Name = "button2";
       this.button2.Size = new System.Drawing.Size(107, 23);
@@ -280,6 +271,7 @@
       this.comboBox1.Name = "comboBox1";
       this.comboBox1.Size = new System.Drawing.Size(121, 21);
       this.comboBox1.TabIndex = 25;
+      this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
       // 
       // label3
       // 
@@ -299,11 +291,90 @@
       this.textBox1.Size = new System.Drawing.Size(292, 20);
       this.textBox1.TabIndex = 27;
       // 
+      // HostIpBox
+      // 
+      this.HostIpBox.Location = new System.Drawing.Point(53, 532);
+      this.HostIpBox.Name = "HostIpBox";
+      this.HostIpBox.Size = new System.Drawing.Size(235, 20);
+      this.HostIpBox.TabIndex = 28;
+      this.HostIpBox.TextChanged += new System.EventHandler(this.HostIpBox_TextChanged);
+      // 
+      // HostPortBox
+      // 
+      this.HostPortBox.Location = new System.Drawing.Point(337, 532);
+      this.HostPortBox.Name = "HostPortBox";
+      this.HostPortBox.Size = new System.Drawing.Size(52, 20);
+      this.HostPortBox.TabIndex = 29;
+      this.HostPortBox.TextChanged += new System.EventHandler(this.HostPortBox_TextChanged);
+      // 
+      // label6
+      // 
+      this.label6.AutoSize = true;
+      this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label6.Location = new System.Drawing.Point(23, 535);
+      this.label6.Name = "label6";
+      this.label6.Size = new System.Drawing.Size(24, 17);
+      this.label6.TabIndex = 30;
+      this.label6.Text = "IP:";
+      // 
+      // label7
+      // 
+      this.label7.AutoSize = true;
+      this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.label7.Location = new System.Drawing.Point(294, 532);
+      this.label7.Name = "label7";
+      this.label7.Size = new System.Drawing.Size(38, 17);
+      this.label7.TabIndex = 31;
+      this.label7.Text = "Port:";
+      // 
+      // HostHeaderLbl
+      // 
+      this.HostHeaderLbl.AutoSize = true;
+      this.HostHeaderLbl.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+      this.HostHeaderLbl.Location = new System.Drawing.Point(23, 501);
+      this.HostHeaderLbl.Name = "HostHeaderLbl";
+      this.HostHeaderLbl.Size = new System.Drawing.Size(119, 17);
+      this.HostHeaderLbl.TabIndex = 32;
+      this.HostHeaderLbl.Text = "Host Network Info";
+      // 
+      // BeginHostBtn
+      // 
+      this.BeginHostBtn.Location = new System.Drawing.Point(405, 528);
+      this.BeginHostBtn.Name = "BeginHostBtn";
+      this.BeginHostBtn.Size = new System.Drawing.Size(75, 23);
+      this.BeginHostBtn.TabIndex = 33;
+      this.BeginHostBtn.Text = "Allow Peers";
+      this.BeginHostBtn.UseVisualStyleBackColor = true;
+      this.BeginHostBtn.Click += new System.EventHandler(this.BeginHostBtn_Click);
+      // 
+      // FileName
+      // 
+      this.FileName.HeaderText = "File Name";
+      this.FileName.Name = "FileName";
+      this.FileName.Width = 150;
+      // 
+      // FileType
+      // 
+      this.FileType.HeaderText = "File Type";
+      this.FileType.Name = "FileType";
+      // 
+      // FileLocation
+      // 
+      this.FileLocation.HeaderText = "File Location";
+      this.FileLocation.Name = "FileLocation";
+      this.FileLocation.Width = 200;
+      // 
       // ClientForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(502, 675);
+      this.Controls.Add(this.BeginHostBtn);
+      this.Controls.Add(this.HostHeaderLbl);
+      this.Controls.Add(this.label7);
+      this.Controls.Add(this.label6);
+      this.Controls.Add(this.HostPortBox);
+      this.Controls.Add(this.HostIpBox);
       this.Controls.Add(this.textBox1);
       this.Controls.Add(this.label3);
       this.Controls.Add(this.comboBox1);
@@ -353,9 +424,6 @@
     private System.Windows.Forms.Label label1;
     private System.Windows.Forms.DataGridView fileInformationGrid;
     private System.Windows.Forms.Button button2;
-    private System.Windows.Forms.DataGridViewTextBoxColumn File;
-    private System.Windows.Forms.DataGridViewTextBoxColumn FileType;
-    private System.Windows.Forms.DataGridViewTextBoxColumn FileLocation;
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Label label4;
     private System.Windows.Forms.TextBox localAddress;
@@ -364,5 +432,14 @@
     private System.Windows.Forms.ComboBox comboBox1;
     private System.Windows.Forms.Label label3;
     private System.Windows.Forms.TextBox textBox1;
+    private System.Windows.Forms.TextBox HostIpBox;
+    private System.Windows.Forms.TextBox HostPortBox;
+    private System.Windows.Forms.Label label6;
+    private System.Windows.Forms.Label label7;
+    private System.Windows.Forms.Label HostHeaderLbl;
+    private System.Windows.Forms.Button BeginHostBtn;
+    private System.Windows.Forms.DataGridViewTextBoxColumn FileName;
+    private System.Windows.Forms.DataGridViewTextBoxColumn FileType;
+    private System.Windows.Forms.DataGridViewTextBoxColumn FileLocation;
   }
 }

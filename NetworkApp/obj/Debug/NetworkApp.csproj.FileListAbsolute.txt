@@ -42,3 +42,4 @@ C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\NetworkApp.pdb
 C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\SharedMemory.dll
 C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\SharedMemory.xml
 C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.csproj.CopyComplete
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.csprojAssemblyReference.cache
