@@ -26,8 +26,7 @@ namespace NetworkApp
 
     SharedArray<byte> producer; //Shared memory array write to this to communicate with child threads.
 
-    List<FileStruct> fileList = new List<FileStruct>(); //List of files.
-    List<FileStruct> clientFileList = new List<FileStruct>(); //List of files in the client directory.
+    List<FileStruct> serverFileList = new List<FileStruct>(); //List of files from server.
     List<ClientInfo> clientsList = new List<ClientInfo>();
 
 
@@ -53,12 +52,17 @@ namespace NetworkApp
       //create new tcpServer listener
       server = new TcpListener(localAddr, portNum);
 
+      FileStruct serverFile = new FileStruct("baseFile", "initPurposes", -99, -99);
+      serverFileList.Add(serverFile);
+      Serializer.Save("server.bin", serverFileList);
+
       ServerRunning(server);
     }
 
     public void ServerRunning(TcpListener listener)
     {
       bool running = true;
+
       using (producer = new SharedArray<byte>("ParentToChildCmdArray", 40))
       {
         //server begins listening for connections
@@ -70,6 +74,13 @@ namespace NetworkApp
           {
             Console.WriteLine("\n" + "."); //output to server log.
             cmdCt = 0;
+
+            DeserializeServerList("server.bin");
+            Console.WriteLine("Known Files:");
+            foreach(FileStruct f in serverFileList)
+            {
+              Console.WriteLine("ID: " + f.GetID() + " FileName: " + f.GetFileName() + " Desc:" + f.GetFileDesc() + " OwnerID: " + f.GetOwner() + " :end");
+            }
           }
           cmdCt++;
 
@@ -113,27 +124,22 @@ namespace NetworkApp
           }
           catch (Exception z)
           {
-             Console.WriteLine(z.ToString());
+            Console.WriteLine(z.ToString());
           }
           Application.DoEvents();
         }
       }
     }
 
-    //Deserializes file list from client then adds the files to the server file list.
-    private void DeserializeClientFileList(string clientFileListName)
-    {
-      clientFileList = Serializer.Load<List<FileStruct>>(clientFileListName);
-      for (int i = 0; i < fileList.Count(); i++)
-      {
-        fileList.Add(clientFileList[i]);
-      }
-    }
-
     //Seralizes the server's file list for sending to client.
     private void SerializeFileList()
     {
-      Serializer.Save("ServerFileList.bin", fileList);
+      Serializer.Save("ServerFileList.bin", serverFileList);
+    }
+
+    private void DeserializeServerList(string listName)
+    {
+      serverFileList = Serializer.Load<List<FileStruct>>(listName);
     }
   }
 }

@@ -54,6 +54,55 @@ namespace NetworkApp
       ownerID = id;
     }
 
+    public override string  ToString()
+    {
+      string craftedString = "#";
+
+      craftedString += "|ID:" + GetID()+"";
+      craftedString += "|Owner:" + GetOwner()+"";
+      craftedString += "|FileName:" + GetFileName()+"";
+      craftedString += "|FileDes:" + GetFileDesc()+"";
+
+      craftedString += "";
+
+      return craftedString;
+    }
+
+    public FileStruct(string encoded)
+    {  
+      string[] duo = encoded.Split('|');
+      int i = 0;
+      foreach (string part in duo)
+      {
+        if (i > 0)
+        {
+          string[] seed = part.Split(':');
+          switch (seed[0])
+          {
+            case "ID":
+              SetID(int.Parse(seed[1]));
+              break;
+            case "Owner":
+              SetOwner(int.Parse(seed[1]));
+              break;
+            case "FileName":
+              SetFileName(seed[1]);
+              break;
+            case "FileDes":
+              SetFileDesc(seed[1]);
+              break;
+            default:
+              SetFileName("null");
+              SetFileDesc("null");
+              SetID(-1);
+              SetOwner(-1);
+              break;
+          }
+        }
+        i++;
+      }
+    }
+
     //Constructor
     public FileStruct(string name, string desc, int id, int oid)
     {

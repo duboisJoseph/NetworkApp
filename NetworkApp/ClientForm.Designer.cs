@@ -80,7 +80,6 @@
       this.IPEntryField.Name = "IPEntryField";
       this.IPEntryField.Size = new System.Drawing.Size(235, 20);
       this.IPEntryField.TabIndex = 1;
-      this.IPEntryField.TextChanged += new System.EventHandler(this.IPEntryField_TextChanged);
       // 
       // IPEntryLbl
       // 
@@ -98,7 +97,6 @@
       this.PortEntryField.Name = "PortEntryField";
       this.PortEntryField.Size = new System.Drawing.Size(51, 20);
       this.PortEntryField.TabIndex = 3;
-      this.PortEntryField.TextChanged += new System.EventHandler(this.PortEntryField_TextChanged);
       // 
       // PortEntryLbl
       // 
@@ -129,7 +127,6 @@
       this.LogWindowLabel.Size = new System.Drawing.Size(71, 17);
       this.LogWindowLabel.TabIndex = 6;
       this.LogWindowLabel.Text = "Client Log";
-      this.LogWindowLabel.Click += new System.EventHandler(this.LogWindowLabel_Click);
       // 
       // BeginConnectionBtn
       // 
@@ -157,7 +154,6 @@
       this.CmdField.Name = "CmdField";
       this.CmdField.Size = new System.Drawing.Size(336, 20);
       this.CmdField.TabIndex = 9;
-      this.CmdField.TextChanged += new System.EventHandler(this.CmdBox_TextChanged);
       // 
       // CmdBtn
       // 
@@ -201,7 +197,6 @@
       this.fileInformationGrid.Name = "fileInformationGrid";
       this.fileInformationGrid.Size = new System.Drawing.Size(458, 99);
       this.fileInformationGrid.TabIndex = 14;
-      this.fileInformationGrid.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.fileInformationGrid_CellContentClick);
       // 
       // button2
       // 
@@ -282,7 +277,6 @@
       this.label3.Size = new System.Drawing.Size(166, 17);
       this.label3.TabIndex = 26;
       this.label3.Text = "Search for File on Server";
-      this.label3.Click += new System.EventHandler(this.label3_Click);
       // 
       // textBox1
       // 
@@ -400,7 +394,6 @@
       this.Controls.Add(this.TitleLbl);
       this.Name = "ClientForm";
       this.Text = "ClientForm";
-      this.Load += new System.EventHandler(this.ClientForm_Load);
       ((System.ComponentModel.ISupportInitialize)(this.fileInformationGrid)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();

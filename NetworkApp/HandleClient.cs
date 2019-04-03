@@ -101,75 +101,73 @@ namespace NetworkApp
     {
       NetworkStream networkStream;
 
-      int requestCount = 0;
       byte[] bytesFrom = new byte[8192];
-      string dataFromClient = null;
       Byte[] sendBytes = null;
       string serverResponse = null;
-      requestCount = 0;
+
       networkStream = clientSocket.GetStream();
 
-      
       bool msgToSend = true;  
-      int cmdCt = -1; 
                       
       using (var consumer = new SharedMemory.SharedArray<byte>("ParentToChildCmdArray"))
       {
         while (keepLiving)
         {
           byte[] cmd = new byte[40];
-          int i = 0;
 
           serverResponse = "Connection Established" + DateTime.Now.ToString(); //Set Value of first message to send to client
-
-          foreach (byte b in consumer)
-          {
-            cmd[i] = b;
-            i++;
-          };
-
-          if ((cmd[0] == '!') && (cmd[1] > cmdCt)) //if is a command and not the previous command
-          {
-            cmdCt = cmd[1]; //adjust cmdCt counter so that this child thread only executes the cmd once.
-            msgToSend = true; //send a new message to the client
-
-            string msg = System.Text.Encoding.ASCII.GetString(cmd, 2, (i - 2)); //extract cmd into a string
-
-            if (msg == "stop") //if we have recieved a stop command
-            {
-              serverResponse = "Server shutting down...";
-              keepLiving = false;
-            }
-            else
-            {
-              serverResponse = " .beat. ";//;
-            }
-          }
-
+         
           if(networkStream.CanRead)
           {
-            if (networkStream.DataAvailable)
+            string fileString = "";
+            while (networkStream.DataAvailable)
             {
-              Stream fileStream = File.OpenWrite("hotdog.bin");
-              int thisRead = 0;
-              while (networkStream.DataAvailable)
+              BinaryReader reader = new BinaryReader(networkStream);
+              fileString = reader.ReadString();
+              Console.WriteLine(fileString);
+
+              if(fileString[0] == '#')
               {
-                thisRead = networkStream.Read(bytesFrom, 0, bytesFrom.Length); //read bytes from data stream
-                fileStream.Write(bytesFrom, 0, thisRead);
+                string[] encodedFiles = fileString.Split('#');
+                int i = 0;
+                foreach (string s in encodedFiles)
+                {
+                  if(i > 0)
+                  {
+                    FileStruct f = new FileStruct(s);
+                    fileList.Add(f);
+                  }
+                  i++;
+                }
+                DeserializeServerList("server.bin");
+
+                foreach (FileStruct f in fileList)
+                {
+                  bool existsInServer = false;
+                  foreach (FileStruct onServ in serverFileList)
+                  {
+
+                    if ((f.GetID() == onServ.GetID()) && (f.GetOwner() == onServ.GetOwner()))
+                    {
+                      existsInServer = true;
+                    }
+                  }
+                  if (!existsInServer)
+                  {
+                    serverFileList.Add(f);
+                    Console.WriteLine("Adding: "+ f.ToString() + " to server fileList");
+                  }
+                }
+                Serializer.Save("server.bin", serverFileList);
               }
-              fileStream.Close();
-
-              DeserializeServerList("hotdog.bin");
-
-              foreach(FileStruct f in serverFileList)
+              else
               {
-                f.SetFileName("rec.png");
+                serverResponse = "To Client: Server Recived cmd: [" + fileString + "]";
+                msgToSend = true;
               }
-
-              Serializer.Save("hotdog.bin", fileList);
             }
+            networkStream.Flush();
           }
-
           if (msgToSend)
           {
             try
@@ -184,10 +182,7 @@ namespace NetworkApp
               else
               {
                  Console.WriteLine("Client Handler #" + clNo + " can't write");
-              }//networkStream.Flush();
-
-
-              //networkStream.Close();
+              }
               if (!keepLiving)
               {
                 clientSocket.Close(); //close socket
@@ -196,7 +191,6 @@ namespace NetworkApp
             }
             catch (Exception ex)
             {
-              Console.WriteLine(" >> " + ex.ToString());
               clientSocket.Close();
               networkStream.Close();
             }

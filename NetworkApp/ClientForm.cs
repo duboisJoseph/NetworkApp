@@ -132,21 +132,6 @@ namespace NetworkApp
       }
     }
 
-    private void ClientForm_Load(object sender, EventArgs e)
-    {
-
-    }//function is called when the window first appears, could be used for intializations
-
-    private void IPEntryField_TextChanged(object sender, EventArgs e)
-    {
-
-    }//event could be used for input validation
-
-    private void PortEntryField_TextChanged(object sender, EventArgs e)
-    {
-
-    }//event could be used for input validation
-
     private void BeginConnectionBtn_Click(object sender, EventArgs e) //Using information in fields connect to the server
     {
       Int32 portNum; //Port number
@@ -176,23 +161,6 @@ namespace NetworkApp
       }
     }
 
-
-
-    private void CmdBox_TextChanged(object sender, EventArgs e)
-    {
-
-    } //could be used for input validation
-
-    private void LogWindowLabel_Click(object sender, EventArgs e)
-    {
-
-    }
-
-    private void fileListBox_SelectedIndexChanged(object sender, EventArgs e)
-    {
-
-    }
-
     //"Choose Sharing Directory" Button Handler:
     private void ChooseSharingDirectoryClick(object sender, EventArgs e)
     {
@@ -212,7 +180,6 @@ namespace NetworkApp
           localFileList.Add(f);
           fid++;
         }
-        SerializeFileList();
       }
     }
 
@@ -233,7 +200,6 @@ namespace NetworkApp
           localFileList.Add(f);
           fid++;
         }
-        SerializeFileList();
       }
     }
 
@@ -242,11 +208,6 @@ namespace NetworkApp
       
 
     } 
-
-    private void fileInformationGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
-    {
-
-    }
 
     private void DeserializeClientFileList(string clientFileListName)
     {
@@ -263,10 +224,6 @@ namespace NetworkApp
       Serializer.Save("ServerFileList.bin", localFileList);
     }
 
-    private void label3_Click(object sender, EventArgs e)
-    {
-
-    }
 
     private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
@@ -290,55 +247,39 @@ namespace NetworkApp
 
     private void BeginHostBtn_Click(object sender, EventArgs e)
     {
+      //Post File Data to Server
+      string fileString = "";
 
-      //Serializer.Save("ClientInfo.bin", localHostInfo);
-      /*
-      FileStruct f = new FileStruct("please.jpg", "jpg", 0, 0);
-      localFileList.Add(f);
-      SerializeFileList();
-      List<FileStruct> temp = new List<FileStruct>();
-      temp = Serializer.Load<List<FileStruct>>("ServerFileList.bin");
-      foreach(FileStruct l in temp)
+      foreach(FileStruct f in localFileList)
       {
-        HostIpBox.Text = l.GetFileName();
+        fileString += f.ToString(); //uses overridden toString function
       }
-      */
+      BinaryWriter writer = new BinaryWriter(ns);
+      writer.Write(fileString);
 
-      Stream fileStream = File.OpenRead("ServerFileList.bin");
-      byte[] outBuffer = new byte[fileStream.Length];
-      fileStream.Read(outBuffer, 0, (int)fileStream.Length);
-      ns.Write(outBuffer,0,outBuffer.Length);
-
-      //create a tcplistener to listen for peer connections.
+      LogBox.Text += "\n Writing File List to Server";
     }
 
     private void CmdBtn_Click(object sender, EventArgs e)
     {
-       //TODO need to develop function so that when the send command button is pressed the client writes its command string to the server 
-      /* if (ns.CanWrite)
-       {
-         byte[] outStream = System.Text.Encoding.ASCII.GetBytes(CmdField.Text);
-         ns.Write(outStream, 0, outStream.Length);
-       }
-       else
-       {
-         LogBox.Text += "\n>>" + "Unable to write to stream"; //Output to log window
-       }
-       //ns.Flush();
-       */
-
-      
-      List<FileStruct> temp = new List<FileStruct>();
-      temp = Serializer.Load<List<FileStruct>>("hotdog.bin");
-      foreach (FileStruct l in temp)
+      switch (CmdField.Text)
       {
-        CmdField.Text += l.GetFileName();
-
-        //l.SetFileName("Thank you!.txt");
-      }
-      //Serializer.Save("ServerFileList.bin", temp);
-      
-
+        case "encode":
+          {
+            foreach (FileStruct f in localFileList)
+              LogBox.Text += "\n" + f.ToString();
+            break;
+          }
+        case "decode": //command I use to test stuff to test decoding sent strings
+          {
+            break;
+          }
+        default:
+          LogBox.Text += "\n Client:" + CmdField.Text;
+          BinaryWriter writer = new BinaryWriter(ns);
+          writer.Write(CmdField.Text);
+          break;
+      }  
     }
   }
 }
