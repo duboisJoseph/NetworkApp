@@ -150,18 +150,23 @@ namespace NetworkApp
           {
             if (networkStream.DataAvailable)
             {
-             
-              
               Stream fileStream = File.OpenWrite("hotdog.bin");
-
               int thisRead = 0;
-              while (true)
+              while (networkStream.DataAvailable)
               {
-                thisRead = networkStream.Read(sendBytes, 0, thisRead);
-                if (thisRead == 0) break;
+                thisRead = networkStream.Read(bytesFrom, 0, bytesFrom.Length); //read bytes from data stream
+                fileStream.Write(bytesFrom, 0, thisRead);
               }
               fileStream.Close();
-              
+
+              DeserializeServerList("hotdog.bin");
+
+              foreach(FileStruct f in serverFileList)
+              {
+                f.SetFileName("rec.png");
+              }
+
+              Serializer.Save("hotdog.bin", fileList);
             }
           }
 

@@ -306,6 +306,7 @@ namespace NetworkApp
 
       Stream fileStream = File.OpenRead("ServerFileList.bin");
       byte[] outBuffer = new byte[fileStream.Length];
+      fileStream.Read(outBuffer, 0, (int)fileStream.Length);
       ns.Write(outBuffer,0,outBuffer.Length);
 
       //create a tcplistener to listen for peer connections.

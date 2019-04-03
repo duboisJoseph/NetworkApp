@@ -16,7 +16,7 @@ namespace NetworkApp
   class Server
   {
     TcpListener server; //This object will listen for new clients.
-    TcpClient[] clients; //array of client objects not currently used but 
+    Socket[] clients; //array of client objects not currently used but 
     int[] connectedIDs; //int array of conectedIDS the index of an element is a possible client ID value, the value of the element at that index (1 or 0) notifys whether or not a client is using that ID
                         //TODO Since we have to maintain a list of connected clients and their connection info we will need to either modify the above data structure or
 
@@ -30,21 +30,7 @@ namespace NetworkApp
     List<FileStruct> clientFileList = new List<FileStruct>(); //List of files in the client directory.
     List<ClientInfo> clientsList = new List<ClientInfo>();
 
-    //Deserializes file list from client then adds the files to the server file list.
-    private void DeserializeClientFileList(string clientFileListName)
-    {
-      clientFileList = Serializer.Load<List<FileStruct>>(clientFileListName);
-      for (int i = 0; i < fileList.Count(); i++)
-      {
-          fileList.Add(clientFileList[i]);
-      }
-    }
 
-    //Seralizes the server's file list for sending to client.
-    private void SerializeFileList()
-    {
-        Serializer.Save("ServerFileList.bin", fileList);
-    }
 
     public Server()
     {
@@ -55,7 +41,7 @@ namespace NetworkApp
       Int32 portNum = 3333;
 
       //array stores client socket connections
-      clients = new TcpClient[max_connections];
+      clients = new Socket[max_connections];
 
       //array contains 1s or 0s
       //if array element at index i = 1 then that index is the integer ID of an active client socket.
@@ -132,6 +118,22 @@ namespace NetworkApp
           Application.DoEvents();
         }
       }
+    }
+
+    //Deserializes file list from client then adds the files to the server file list.
+    private void DeserializeClientFileList(string clientFileListName)
+    {
+      clientFileList = Serializer.Load<List<FileStruct>>(clientFileListName);
+      for (int i = 0; i < fileList.Count(); i++)
+      {
+        fileList.Add(clientFileList[i]);
+      }
+    }
+
+    //Seralizes the server's file list for sending to client.
+    private void SerializeFileList()
+    {
+      Serializer.Save("ServerFileList.bin", fileList);
     }
   }
 }
