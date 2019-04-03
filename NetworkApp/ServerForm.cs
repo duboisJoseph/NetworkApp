@@ -150,7 +150,7 @@ namespace NetworkApp
 
                     HandleClient client = new HandleClient(); //create new client handler
 
-                    client.StartClient(clientSocket, Convert.ToString(i)); //start new client handler with the socket connection and the client ID i
+                    client.StartClient(clientSocket, i); //start new client handler with the socket connection and the client ID i
                     break;
                   }
                 }

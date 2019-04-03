@@ -221,7 +221,7 @@
       this.button2.TabIndex = 15;
       this.button2.Text = "Refresh File List";
       this.button2.UseVisualStyleBackColor = true;
-      this.button2.Click += new System.EventHandler(this.refreshFileList);
+      this.button2.Click += new System.EventHandler(this.RefreshFileList);
       // 
       // label2
       // 

@@ -4,61 +4,61 @@ using System.Text;
 
 namespace NetworkApp
 {
-    public class fileStruct
+  public class FileStruct
+  {
+    string fileName;
+    string fileDesc;
+    int fileID;
+    int ownerID;
+
+    //Getter and setters
+    public string GetFileName()
     {
-        string fileName;
-        string fileDesc;
-        int fileID;
-        int ownerID;
-
-        //Getter and setters
-        public string getFileName()
-        {
-            return fileName;
-        }
-
-        private void setFileName(string name)
-        {
-            fileName = name;
-        }
-
-        public string getFileDesc()
-        {
-            return fileDesc;
-        }
-
-        private void setFileDesc(string desc)
-        {
-            fileDesc = desc;
-        }
-
-        public int getID()
-        {
-            return fileID;
-        }
-
-        private void setID(int id)
-        {
-            fileID = id;
-        }
-
-        public int getOwner()
-        {
-            return ownerID;
-        }
-
-        private void setOwner(int id)
-        {
-            ownerID = id;
-        }
-
-        //Constructor
-        public fileStruct(string name, string desc, int id, int oid)
-        {
-            setFileName(name);
-            setFileDesc(desc);
-            setID(id);
-            setOwner(oid);
-        }
+      return fileName;
     }
+
+    private void SetFileName(string name)
+    {
+      fileName = name;
+    }
+
+    public string GetFileDesc()
+    {
+       return fileDesc;
+    }
+
+    private void SetFileDesc(string desc)
+    {
+      fileDesc = desc;
+    }
+
+    public int GetID()
+    {
+      return fileID;
+    }
+
+    private void SetID(int id)
+    {
+      fileID = id;
+    }
+
+    public int GetOwner()
+    {
+      return ownerID;
+    }
+
+    private void SetOwner(int id)
+    {
+      ownerID = id;
+    }
+
+    //Constructor
+    public FileStruct(string name, string desc, int id, int oid)
+    {
+      SetFileName(name);
+      SetFileDesc(desc);
+      SetID(id);
+      SetOwner(oid);
+    }
+  }
 }

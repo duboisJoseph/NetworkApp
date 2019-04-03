@@ -51,15 +51,18 @@ namespace NetworkApp
     Timer MyTimer; //timer object that triggers clock events
     byte[] bytes = new byte[1024]; //array of bytes
     int bytesRead; //number of bytes read
+    int serverGivenID = -1;
 
     //Folder Browser for files:
     FolderBrowserDialog FBD = new FolderBrowserDialog();
     string[] files;             //Anthony/Alec, this is the string of files that stores all the files in the local user's computer.
 
-    public ClientForm() //Constructor (called only once)
+    List<FileStruct> localFileList = new List<FileStruct>();
+
+    public ClientForm() 
     {
-      InitializeComponent(); //Loads UI
-      InitializeTimer(); //Sets up timer
+      InitializeComponent();
+      InitializeTimer(); 
       GetLocalClientInformation();
     }
 
@@ -216,7 +219,7 @@ namespace NetworkApp
     }
 
     //"Refresh File List" Button Handler:
-    private void refreshFileList(object sender, EventArgs e)
+    private void RefreshFileList(object sender, EventArgs e)
     {
       //Get all files in directory:
 
@@ -227,16 +230,40 @@ namespace NetworkApp
       {
         files = Directory.GetFiles(FBD.SelectedPath);
         fileInformationGrid.Rows.Clear();
+        int fileID = 0;
         foreach (string file in files)
         {
           fileInformationGrid.Rows.Add(Path.GetFileName(file), Path.GetExtension(file), file);
+          FileStruct localFile = new FileStruct(Path.GetFileName(file),Path.GetExtension(file),fileID,serverGivenID);
+          fileID++;
         }
       }
     }
 
+    private void PushFileDataToServer(string file)
+    {
+      
+
+    } 
+
     private void fileInformationGrid_CellContentClick(object sender, DataGridViewCellEventArgs e)
     {
 
+    }
+
+    private void DeserializeClientFileList(string clientFileListName)
+    {
+      localFileList = Serializer.Load<List<FileStruct>>(clientFileListName);
+      for (int i = 0; i < localFileList.Count(); i++)
+      {
+        localFileList.Add(localFileList[i]);
+      }
+    }
+
+    //Seralizes the server's file list for sending to client.
+    private void SerializeFileList()
+    {
+      Serializer.Save("ServerFileList.bin", localFileList);
     }
 
     private void label3_Click(object sender, EventArgs e)

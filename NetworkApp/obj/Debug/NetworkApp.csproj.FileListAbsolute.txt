@@ -28,3 +28,17 @@ C:\Users\joe\Documents\CIS457\NetworkApp\NetworkApp\obj\Debug\NetworkApp.csproj.
 C:\Users\joe\Documents\CIS457\NetworkApp\NetworkApp\obj\Debug\NetworkApp.csproj.CopyComplete
 C:\Users\joe\Documents\CIS457\NetworkApp\NetworkApp\obj\Debug\NetworkApp.exe
 C:\Users\joe\Documents\CIS457\NetworkApp\NetworkApp\obj\Debug\NetworkApp.pdb
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.ClientForm.resources
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.Properties.Resources.resources
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.ServerForm.resources
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.WelcomForm.resources
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.csproj.GenerateResource.cache
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.csproj.CoreCompileInputs.cache
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.exe
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.pdb
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\NetworkApp.exe.config
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\NetworkApp.exe
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\NetworkApp.pdb
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\SharedMemory.dll
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\SharedMemory.xml
+C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.csproj.CopyComplete
