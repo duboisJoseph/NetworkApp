@@ -439,6 +439,7 @@
       this.Controls.Add(this.TitleLbl);
       this.Name = "ClientForm";
       this.Text = "ClientForm";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClientForm_FormClosing);
       ((System.ComponentModel.ISupportInitialize)(this.fileInformationGrid)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();

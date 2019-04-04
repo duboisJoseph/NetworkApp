@@ -113,6 +113,7 @@ namespace NetworkApp
 
     private void MyTimer_tick(object Sender, EventArgs e) //Event handler for Timer ticks.
     {
+      string response = "";
       if (ns.CanRead)
       {
         try
@@ -121,7 +122,13 @@ namespace NetworkApp
           { 
             bytesRead = ns.Read(bytes, 0, bytes.Length); //read bytes from data stream
             serverGivenID = int.Parse(Encoding.ASCII.GetString(bytes, 2, 1));
-            LogBox.Text += "\n "+serverGivenID+">>" + Encoding.ASCII.GetString(bytes, 3, bytesRead); //convert bytes to string and output to log window
+            response = Encoding.ASCII.GetString(bytes, 3, bytesRead); //convert bytes to string and output to log window
+            if (response.Contains("Results:"))
+            {
+              SearchResultsBox.Text = response;
+            } else {
+              LogBox.Text += "\n " + serverGivenID + ">>" + response;
+            }
             localHostInfo.clientID = serverGivenID;
           }
         }
@@ -205,12 +212,6 @@ namespace NetworkApp
         }
       }
     }
-
-    private void PushFileDataToServer(string file)
-    {
-      
-
-    } 
 
     private void DeserializeClientFileList(string clientFileListName)
     {
@@ -368,12 +369,33 @@ namespace NetworkApp
 
     private void BeginSearchBtn_Click(object sender, EventArgs e)
     {
-      string searchString = "&";
+      ns.Flush();
+      string searchString = "";
       LogBox.Text += "\n Client Searching for:" + SearchBox.Text;
       BinaryWriter writer = new BinaryWriter(ns);
 
-      searchString += SearchBox.Text;
-      writer.Write(CmdField.Text);
+      searchString += "$"+SearchBox.Text;
+      writer.Write(searchString);
+    }
+
+    private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      MyTimer.Stop();
+      MyTimer.Dispose();
+
+      //Post File Data to Server
+      string closingString = "$$!" + serverGivenID;
+
+      BinaryWriter writer = new BinaryWriter(ns);
+      writer.Write(closingString);
+
+      LogBox.Text += "Shutting Down.";
+
+      writer.Write(closingString);
+
+      FBD.Dispose();
+      client.Close();
+      ns.Close();
     }
   }
 }
