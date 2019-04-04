@@ -226,7 +226,6 @@ namespace NetworkApp
       Serializer.Save("ServerFileList.bin", localFileList);
     }
 
-
     private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
       localHostInfo.connType = comboBox1.Text;
@@ -267,6 +266,7 @@ namespace NetworkApp
       writer.Write(clientInfoString);
 
       LogBox.Text += "\n Write local connection info to Server";
+      //writer.Close();
     }
 
     private void CmdBtn_Click(object sender, EventArgs e)
@@ -289,6 +289,27 @@ namespace NetworkApp
           writer.Write(CmdField.Text);
           break;
       }  
+    }
+
+    private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      MyTimer.Stop();
+      MyTimer.Dispose();
+
+      //Post File Data to Server
+      string closingString = "$$!"+serverGivenID;
+
+     
+      BinaryWriter writer = new BinaryWriter(ns);
+      writer.Write(closingString);
+
+      LogBox.Text += "Shutting Down.";
+
+      writer.Write(closingString);
+
+      FBD.Dispose();
+      client.Close();
+      ns.Close();
     }
   }
 }

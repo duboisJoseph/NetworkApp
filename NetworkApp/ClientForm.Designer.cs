@@ -42,6 +42,9 @@
       this.button1 = new System.Windows.Forms.Button();
       this.label1 = new System.Windows.Forms.Label();
       this.fileInformationGrid = new System.Windows.Forms.DataGridView();
+      this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.FileType = new System.Windows.Forms.DataGridViewTextBoxColumn();
+      this.FileLocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
       this.button2 = new System.Windows.Forms.Button();
       this.label2 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
@@ -57,9 +60,6 @@
       this.label7 = new System.Windows.Forms.Label();
       this.HostHeaderLbl = new System.Windows.Forms.Label();
       this.BeginHostBtn = new System.Windows.Forms.Button();
-      this.FileName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-      this.FileType = new System.Windows.Forms.DataGridViewTextBoxColumn();
-      this.FileLocation = new System.Windows.Forms.DataGridViewTextBoxColumn();
       ((System.ComponentModel.ISupportInitialize)(this.fileInformationGrid)).BeginInit();
       this.SuspendLayout();
       // 
@@ -197,6 +197,23 @@
       this.fileInformationGrid.Name = "fileInformationGrid";
       this.fileInformationGrid.Size = new System.Drawing.Size(458, 99);
       this.fileInformationGrid.TabIndex = 14;
+      // 
+      // FileName
+      // 
+      this.FileName.HeaderText = "File Name";
+      this.FileName.Name = "FileName";
+      this.FileName.Width = 150;
+      // 
+      // FileType
+      // 
+      this.FileType.HeaderText = "File Type";
+      this.FileType.Name = "FileType";
+      // 
+      // FileLocation
+      // 
+      this.FileLocation.HeaderText = "File Location";
+      this.FileLocation.Name = "FileLocation";
+      this.FileLocation.Width = 200;
       // 
       // button2
       // 
@@ -341,23 +358,6 @@
       this.BeginHostBtn.UseVisualStyleBackColor = true;
       this.BeginHostBtn.Click += new System.EventHandler(this.BeginHostBtn_Click);
       // 
-      // FileName
-      // 
-      this.FileName.HeaderText = "File Name";
-      this.FileName.Name = "FileName";
-      this.FileName.Width = 150;
-      // 
-      // FileType
-      // 
-      this.FileType.HeaderText = "File Type";
-      this.FileType.Name = "FileType";
-      // 
-      // FileLocation
-      // 
-      this.FileLocation.HeaderText = "File Location";
-      this.FileLocation.Name = "FileLocation";
-      this.FileLocation.Width = 200;
-      // 
       // ClientForm
       // 
       this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -394,6 +394,7 @@
       this.Controls.Add(this.TitleLbl);
       this.Name = "ClientForm";
       this.Text = "ClientForm";
+      this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ClientForm_FormClosing);
       ((System.ComponentModel.ISupportInitialize)(this.fileInformationGrid)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
