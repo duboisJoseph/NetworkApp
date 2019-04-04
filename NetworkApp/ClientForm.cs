@@ -456,7 +456,7 @@ namespace NetworkApp
                 LogBox.Text += "\n" + "Connection Not Found";//Output to log window
             }
 
-            Send(Handler, "lol");
+            //Send(Handler, "lol");
         }
     }
 }
