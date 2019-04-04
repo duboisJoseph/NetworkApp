@@ -195,50 +195,6 @@ namespace NetworkApp
                 }
               }
               Serializer.Save("clients.bin", serverClientsList);
-            } else if((fileString[0] == '$') && (fileString[1] == '$') && (fileString[2] == '!'))
-            {
-              Console.WriteLine("Client #"+ clNo +" Attempting to close! " + fileString[3]);
-              if(true)
-              {
-
-                Console.WriteLine("Deleting File Records!");
-                keepLiving = false;
-                DeserializeClientsList("clients.bin");
-                DeserializeServerList("server.bin");
-                List<FileStruct> toRemove =  new List<FileStruct>();
-
-                foreach(FileStruct f in serverFileList)
-                {
-                  if(f.GetOwner() == clNo)
-                  {
-                    toRemove.Add(f);
-                  }
-                }
-
-                foreach(FileStruct f in toRemove)
-                {
-                  serverFileList.Remove(f);
-                }
-                Console.WriteLine("Are the file records deleted?");
-
-                List<ClientInfo> toDisconnect = new List<ClientInfo>();
-
-                foreach (ClientInfo c in serverClientsList)
-                {
-                  if (c.clientID == clNo)
-                  {
-                    toDisconnect.Add(c);
-                  }
-                }
-
-                foreach (ClientInfo c in toDisconnect)
-                {
-                  serverClientsList.Remove(c);
-                }
-
-                Serializer.Save("clients.bin", serverClientsList);
-                Serializer.Save("server.bin", serverFileList);
-              }
             }
             else
             {

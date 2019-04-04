@@ -61,6 +61,7 @@ namespace NetworkApp
 
     List<FileStruct> localFileList = new List<FileStruct>();
     ClientInfo localHostInfo;
+    public static System.Threading.ManualResetEvent allDone = new System.Threading.ManualResetEvent(false);
 
     public ClientForm() 
     {
@@ -226,6 +227,7 @@ namespace NetworkApp
       Serializer.Save("ServerFileList.bin", localFileList);
     }
 
+
     private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
       localHostInfo.connType = comboBox1.Text;
@@ -266,7 +268,7 @@ namespace NetworkApp
       writer.Write(clientInfoString);
 
       LogBox.Text += "\n Write local connection info to Server";
-      //writer.Close();
+      //StartListening(); <------------------------------------------------ Commented out
     }
 
     private void CmdBtn_Click(object sender, EventArgs e)
@@ -291,25 +293,90 @@ namespace NetworkApp
       }  
     }
 
-    private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
+    public void StartListening()
     {
-      MyTimer.Stop();
-      MyTimer.Dispose();
+        //Establish the local end point for the socket. DNS name of the computer, running the listener is our IP
+        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+        IPAddress ipAddress = ipHostInfo.AddressList[0];
+        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Int32.Parse(HostPortBox.Text));
+        LogBox.Text += IPAddress.Parse(((IPEndPoint)localEndPoint).Address.ToString());
+        // Create a TCP/IP socket.  
+        Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            // Bind the socket to the local endpoint and listen for incoming connections.  
+            try
+            {
+                listener.Bind(localEndPoint);
+                listener.Listen(100);
 
-      //Post File Data to Server
-      string closingString = "$$!"+serverGivenID;
+                while (true)
+                {
+                    // Set the event to nonsignaled state.  
+                    allDone.Reset();
 
-     
-      BinaryWriter writer = new BinaryWriter(ns);
-      writer.Write(closingString);
+                    // Start an asynchronous socket to listen for connections.  
+                    Console.WriteLine("Waiting for a connection...");
+                    listener.BeginAccept( new AsyncCallback(AcceptCallback), listener);
 
-      LogBox.Text += "Shutting Down.";
+                    // Wait until a connection is made before continuing.  
+                    allDone.WaitOne();
+                }
 
-      writer.Write(closingString);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+        }
 
-      FBD.Dispose();
-      client.Close();
-      ns.Close();
+        public void AcceptCallback(IAsyncResult ar)
+        {
+            // Signal the main thread to continue.  
+            allDone.Set();
+
+            // Get the socket that handles the client request.  
+            Socket listener = (Socket)ar.AsyncState;
+            Socket handler = listener.EndAccept(ar);
+
+            // Create the state object.  
+            StateObject state = new StateObject();
+            state.workSocket = handler;
+            //handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+        }
+
+        public static void ReadCallback(IAsyncResult ar)
+        {
+            String content = String.Empty;
+
+            // Retrieve the state object and the handler socket  
+            // from the asynchronous state object.  
+            StateObject state = (StateObject)ar.AsyncState;
+            Socket handler = state.workSocket;
+
+            // Read data from the client socket.   
+            int bytesRead = handler.EndReceive(ar);
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+        }
     }
-  }
+}
+
+// State object for reading client data asynchronously  
+public class StateObject
+{
+    // Client  socket.  
+    public Socket workSocket = null;
+    // Size of receive buffer.  
+    public const int BufferSize = 1024;
+    // Receive buffer.  
+    public byte[] buffer = new byte[BufferSize];
+    // Received data string.  
+    public StringBuilder sb = new StringBuilder();
 }
