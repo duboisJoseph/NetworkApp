@@ -50,7 +50,9 @@ namespace NetworkApp
   {
     TcpClient client; //TCP Client socket object
     NetworkStream ns; //Data stream stores messages sent to/from client and server sockets
+    NetworkStream p2p; //Data stream stores messages sent to/from client and server sockets
     Timer MyTimer; //timer object that triggers clock events
+    Timer MyTimerTwo;
     byte[] bytes = new byte[1024]; //array of bytes
     int bytesRead; //number of bytes read
     int serverGivenID = -1;
@@ -62,7 +64,7 @@ namespace NetworkApp
     List<FileStruct> localFileList = new List<FileStruct>();
     ClientInfo localHostInfo;
     public Socket Handler;
-    private Socket listener; // added by corsiKa
+    private Socket listener;
     public static System.Threading.ManualResetEvent allDone = new System.Threading.ManualResetEvent(false);
 
     public ClientForm() 
@@ -115,6 +117,7 @@ namespace NetworkApp
 
     private void MyTimer_tick(object Sender, EventArgs e) //Event handler for Timer ticks.
     {
+      string response = "";
       if (ns.CanRead)
       {
         try
@@ -123,7 +126,13 @@ namespace NetworkApp
           { 
             bytesRead = ns.Read(bytes, 0, bytes.Length); //read bytes from data stream
             serverGivenID = int.Parse(Encoding.ASCII.GetString(bytes, 2, 1));
-            LogBox.Text += "\n "+serverGivenID+">>" + Encoding.ASCII.GetString(bytes, 3, bytesRead); //convert bytes to string and output to log window
+            response = Encoding.ASCII.GetString(bytes, 3, bytesRead); //convert bytes to string and output to log window
+            if (response.Contains("Results:"))
+            {
+              SearchResultsBox.Text = response;
+            } else {
+              LogBox.Text += "\n " + serverGivenID + ">>" + response;
+            }
             localHostInfo.clientID = serverGivenID;
           }
         }
@@ -208,12 +217,6 @@ namespace NetworkApp
       }
     }
 
-    private void PushFileDataToServer(string file)
-    {
-      
-
-    } 
-
     private void DeserializeClientFileList(string clientFileListName)
     {
       localFileList = Serializer.Load<List<FileStruct>>(clientFileListName);
@@ -269,8 +272,8 @@ namespace NetworkApp
       clientInfoString += localHostInfo.ToString();
       writer.Write(clientInfoString);
 
-      LogBox.Text += "\n Opening Connections to other P2P with local machine at : ";
-      StartListening();
+        LogBox.Text += "\n Opening Connections to other P2P with local machine at : ";
+        StartListening();
     }
 
     private void CmdBtn_Click(object sender, EventArgs e)
@@ -303,46 +306,47 @@ namespace NetworkApp
         IPAddress.TryParse("127.0.0.1", out ipAddress);
         //IPAddress ipAddress = ipHostInfo.AddressList[0];
         IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Int32.Parse(HostPortBox.Text));
-        
+
         //Create our client server:
         LogBox.Text += IPAddress.Parse(((IPEndPoint)localEndPoint).Address.ToString());
         LogBox.Text += ":" + HostPortBox.Text;
-            
+
         // Create a TCP/IP socket.  
         listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            // Bind the socket to the local endpoint and listen for incoming connections.  
-            try
-            {
-                listener.Blocking = false;
-                listener.Bind(localEndPoint);
-                listener.Listen(100);
-                LogBox.Text += "\n Listening...";
-                performListen(listener);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-        }
-
-        private void performListen(Socket listener)
+        // Bind the socket to the local endpoint and listen for incoming connections.  
+        try
         {
-            listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
+            listener.Blocking = false;
+            listener.Bind(localEndPoint);
+            listener.Listen(100);
+            LogBox.Text += "\n Listening...";
+            performListen(listener);
         }
-
-        private void AcceptCallback(IAsyncResult ar)
+        catch (Exception e)
         {
-            // Get the socket that handles the client request
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
-            Handler = handler;
-
-            // Create the state object
-            StateObject state = new StateObject();
-            state.workSocket = handler;
-            handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
-            LogBox.Text += "\n Successful connection between Client P2P";
+            Console.WriteLine(e.ToString());
         }
+    }
+
+    private void performListen(Socket listener)
+    {
+        listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
+    }
+
+
+    private void AcceptCallback(IAsyncResult ar)
+    {
+        // Get the socket that handles the client request
+        Socket listener = (Socket)ar.AsyncState;
+        Socket handler = listener.EndAccept(ar);
+        Handler = handler;
+
+        // Create the state object
+        StateObject state = new StateObject();
+        state.workSocket = handler;
+        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+        LogBox.Text += "\n Successful connection between Client P2P";
+    }
 
         public void ReadCallback(IAsyncResult ar)
         {
@@ -392,13 +396,12 @@ namespace NetworkApp
                     Handler.Dispose();
                     Handler = null;
                 }
-                // changed by corsiKa
                 if (acceptMoreConnections)
                     performListen(listener);
             }
             catch (Exception e)
             {
-               
+
             }
         }
 
@@ -432,7 +435,7 @@ namespace NetworkApp
                 Console.WriteLine(e.ToString());
             }
 
-            
+
         }
 
         private void label8_Click(object sender, EventArgs e)
@@ -442,21 +445,56 @@ namespace NetworkApp
 
         private void button3_Click(object sender, EventArgs e)
         {
+
+        }
+
+    private void BeginSearchBtn_Click(object sender, EventArgs e)
+    {
+      ns.Flush();
+      string searchString = "";
+      LogBox.Text += "\n Client Searching for:" + SearchBox.Text;
+      BinaryWriter writer = new BinaryWriter(ns);
+
+      searchString += "@"+SearchBox.Text;
+      writer.Write(searchString);
+    }
+
+    private void ClientForm_FormClosing(object sender, FormClosingEventArgs e)
+    {
+      MyTimer.Stop();
+      MyTimer.Dispose();
+
+      //Post File Data to Server
+      string closingString = "$$!" + serverGivenID;
+
+      BinaryWriter writer = new BinaryWriter(ns);
+      writer.Write(closingString);
+
+      LogBox.Text += "Shutting Down.";
+
+      writer.Write(closingString);
+
+      FBD.Dispose();
+      client.Close();
+      ns.Close();
+      //listener.Close();
+      
+    }
+
+        private void button3_Click_1(object sender, EventArgs e)
+        {
             //Start TCP connection between P2P 
             TcpClient localClient = new TcpClient("127.0.0.1", 3332); //Create client connection to server.
 
             if (client != null) //if not failed
             {
                 LogBox.Text += "\n" + "Connection Complete!";//Output to log window
-                ns = client.GetStream(); //connect data stream to client socket
-                MyTimer.Enabled = true; //Start timer          
+                p2p = localClient.GetStream(); //connect data stream to client socket       
             }
             else
             {
                 LogBox.Text += "\n" + "Connection Not Found";//Output to log window
             }
-
-            //Send(Handler, "lol");
         }
     }
 }
