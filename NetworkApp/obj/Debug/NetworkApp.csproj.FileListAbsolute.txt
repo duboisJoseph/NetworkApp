@@ -43,3 +43,18 @@ C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\SharedMemory.dll
 C:\Users\joe\source\repos\NetworkApp\NetworkApp\bin\Debug\SharedMemory.xml
 C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.csproj.CopyComplete
 C:\Users\joe\source\repos\NetworkApp\NetworkApp\obj\Debug\NetworkApp.csprojAssemblyReference.cache
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\bin\Debug\NetworkApp.exe.config
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\bin\Debug\NetworkApp.exe
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\bin\Debug\NetworkApp.pdb
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\bin\Debug\SharedMemory.xml
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.csprojAssemblyReference.cache
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.ClientForm.resources
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.Properties.Resources.resources
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.ServerForm.resources
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.WelcomForm.resources
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.csproj.GenerateResource.cache
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.csproj.CoreCompileInputs.cache
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.csproj.CopyComplete
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.exe
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\obj\Debug\NetworkApp.pdb
+C:\Users\Staddlez\Desktop\NetworkApp-master (1)\NetworkApp-master\NetworkApp\bin\Debug\SharedMemory.dll

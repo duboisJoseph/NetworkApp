@@ -29,7 +29,7 @@ namespace NetworkApp
        return fileDesc;
     }
 
-    public void SetFileDesc(string desc)
+    private void SetFileDesc(string desc)
     {
       fileDesc = desc;
     }
