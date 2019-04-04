@@ -49,6 +49,10 @@ namespace NetworkApp
 
     List<FileStruct> serverFileList = new List<FileStruct>(); //List of files from server.
 
+    List<ClientInfo> clientsList = new List<ClientInfo>();//List of connected clients from server.
+
+    List<ClientInfo> serverClientsList = new List<ClientInfo>();//Server Master list of connected clients
+
     //Adds file to file list.
     private void AddFileToList(string name, string desc, int id, int oid)
     {
@@ -157,6 +161,40 @@ namespace NetworkApp
                 }
               }
               Serializer.Save("server.bin", serverFileList);
+            } else if(fileString[0] == '!')
+            {
+              Console.WriteLine("Client info recieved: " + fileString);
+              string[] encodedClients = fileString.Split('!');
+              int i = 0;
+              foreach (string s in encodedClients)
+              {
+                if (i > 0)
+                {
+                  ClientInfo c = new ClientInfo(s);
+                  clientsList.Add(c);
+                }
+                i++;
+              }
+              DeserializeClientsList("clients.bin");
+
+              foreach (ClientInfo c in clientsList)
+              {
+                bool existsInServer = false;
+                foreach (ClientInfo onServ in serverClientsList)
+                {
+
+                  if ((c.clientID == onServ.clientID))
+                  {
+                    existsInServer = true;
+                  }
+                }
+                if (!existsInServer)
+                {
+                  serverClientsList.Add(c);
+                  Console.WriteLine("Adding: " + c.ToString() + " to server serverClientsList");
+                }
+              }
+              Serializer.Save("clients.bin", serverClientsList);
             }
             else
             {
@@ -196,6 +234,11 @@ namespace NetworkApp
         }
       }
       this.ctThread.Abort();
+    }
+
+    private void DeserializeClientsList(string listName)
+    {
+      serverClientsList = Serializer.Load<List<ClientInfo>>(listName);   
     }
   }//End of class
 }//End of NameSpace

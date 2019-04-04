@@ -260,6 +260,13 @@ namespace NetworkApp
       writer.Write(fileString);
 
       LogBox.Text += "\n Writing File List to Server";
+
+      string clientInfoString = "";
+
+      clientInfoString += localHostInfo.ToString();
+      writer.Write(clientInfoString);
+
+      LogBox.Text += "\n Write local connection info to Server";
     }
 
     private void CmdBtn_Click(object sender, EventArgs e)

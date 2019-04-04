@@ -25,7 +25,7 @@ namespace NetworkApp
     int cmdCt = 0; //an identifier that increments for each command/message sent to the clients
 
     List<FileStruct> serverFileList = new List<FileStruct>(); //List of files from server.
-    List<ClientInfo> clientsList = new List<ClientInfo>();
+    List<ClientInfo> serverClientsList = new List<ClientInfo>();
 
 
 
@@ -57,8 +57,8 @@ namespace NetworkApp
       serverInfo.dnsName = "localhost";
       serverInfo.connType = "server";
 
-      clientsList.Add(serverInfo);
-      Serializer.Save("clients.bin", clientsList);
+      serverClientsList.Add(serverInfo);
+      Serializer.Save("clients.bin", serverClientsList);
       serverFileList.Add(serverFile);
       Serializer.Save("server.bin", serverFileList);
 
@@ -86,6 +86,13 @@ namespace NetworkApp
           {
             Console.WriteLine("ID: " + f.GetID() + " FileName: " + f.GetFileName() + " Desc:" + f.GetFileDesc() + " OwnerID: " + f.GetOwner() + " :end");
           }
+
+          DeserializeClientsList("clients.bin");
+          Console.WriteLine("Connected Clients:");
+          foreach (ClientInfo f in serverClientsList)
+          {
+            Console.WriteLine("ID: " + f.clientID + " dnsName: " + f.dnsName + " ipAddr:" + f.ipAddr + " port: " + f.portNum + " connectionType: " + f.connType + " :end");
+          }
         }
         cmdCt++;
 
@@ -108,8 +115,6 @@ namespace NetworkApp
               {
                 if (connectedIDs[i] < 1) //if id not taken 
                 {
-                  ClientInfo info = new ClientInfo(i);
-                  clientsList.Add(info);
                   connectedIDs[i] = 1;//mark that ID as taken
 
                   HandleClient client = new HandleClient(); //create new client handler
@@ -142,6 +147,11 @@ namespace NetworkApp
     private void DeserializeServerList(string listName)
     {
       serverFileList = Serializer.Load<List<FileStruct>>(listName);
+    }
+
+    private void DeserializeClientsList(string listName)
+    {
+      serverClientsList = Serializer.Load<List<ClientInfo>>(listName);
     }
   }
 }

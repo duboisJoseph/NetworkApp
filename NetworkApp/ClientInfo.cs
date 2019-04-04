@@ -71,7 +71,7 @@ namespace NetworkApp
 
     public override string ToString()
     {
-      string craftedString = "#";
+      string craftedString = "!";
 
       craftedString += "|dnsName:" + dnsName + "";
       craftedString += "|ipAddr:" + ipAddr + "";
