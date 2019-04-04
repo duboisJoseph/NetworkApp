@@ -127,8 +127,17 @@ namespace NetworkApp
             BinaryReader reader = new BinaryReader(networkStream);
             fileString = reader.ReadString();
             Console.WriteLine(fileString);
+            if(fileString[0] == '@')
+            {
+              DeserializeServerList("server.bin");
+              DeserializeClientsList("clients.bin");
 
-            if(fileString[0] == '#')
+              foreach(FileStruct f in serverFileList)
+              {
+
+              }
+            }
+            else if(fileString[0] == '#')
             {
               string[] encodedFiles = fileString.Split('#');
               int i = 0;

@@ -295,77 +295,87 @@ namespace NetworkApp
 
     public void StartListening()
     {
-        //Establish the local end point for the socket. DNS name of the computer, running the listener is our IP
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress ipAddress = ipHostInfo.AddressList[0];
-        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Int32.Parse(HostPortBox.Text));
-        LogBox.Text += IPAddress.Parse(((IPEndPoint)localEndPoint).Address.ToString());
-        // Create a TCP/IP socket.  
-        Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            // Bind the socket to the local endpoint and listen for incoming connections.  
-            try
-            {
-                listener.Bind(localEndPoint);
-                listener.Listen(100);
+      //Establish the local end point for the socket. DNS name of the computer, running the listener is our IP
+      IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+      IPAddress ipAddress = ipHostInfo.AddressList[0];
+      IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Int32.Parse(HostPortBox.Text));
+      LogBox.Text += IPAddress.Parse(((IPEndPoint)localEndPoint).Address.ToString());
+      // Create a TCP/IP socket.  
+      Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+      // Bind the socket to the local endpoint and listen for incoming connections.  
+      try
+      {
+        listener.Bind(localEndPoint);
+        listener.Listen(100);
 
-                while (true)
-                {
-                    // Set the event to nonsignaled state.  
-                    allDone.Reset();
-
-                    // Start an asynchronous socket to listen for connections.  
-                    Console.WriteLine("Waiting for a connection...");
-                    listener.BeginAccept( new AsyncCallback(AcceptCallback), listener);
-
-                    // Wait until a connection is made before continuing.  
-                    allDone.WaitOne();
-                }
-
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
-        }
-
-        public void AcceptCallback(IAsyncResult ar)
+        while (true)
         {
-            // Signal the main thread to continue.  
-            allDone.Set();
+          // Set the event to nonsignaled state.  
+          allDone.Reset();
 
-            // Get the socket that handles the client request.  
-            Socket listener = (Socket)ar.AsyncState;
-            Socket handler = listener.EndAccept(ar);
+          // Start an asynchronous socket to listen for connections.  
+          Console.WriteLine("Waiting for a connection...");
+          listener.BeginAccept( new AsyncCallback(AcceptCallback), listener);
 
-            // Create the state object.  
-            StateObject state = new StateObject();
-            state.workSocket = handler;
-            //handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+          // Wait until a connection is made before continuing.  
+          allDone.WaitOne();
         }
 
-        public static void ReadCallback(IAsyncResult ar)
-        {
-            String content = String.Empty;
-
-            // Retrieve the state object and the handler socket  
-            // from the asynchronous state object.  
-            StateObject state = (StateObject)ar.AsyncState;
-            Socket handler = state.workSocket;
-
-            // Read data from the client socket.   
-            int bytesRead = handler.EndReceive(ar);
-        }
-
-        private void label8_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-
-        }
+      }
+      catch (Exception e)
+      {
+        Console.WriteLine(e.ToString());
+      }
     }
+
+    public void AcceptCallback(IAsyncResult ar)
+    {
+      // Signal the main thread to continue.  
+      allDone.Set();
+
+      // Get the socket that handles the client request.  
+      Socket listener = (Socket)ar.AsyncState;
+      Socket handler = listener.EndAccept(ar);
+
+      // Create the state object.  
+      StateObject state = new StateObject();
+      state.workSocket = handler;
+      //handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+    }
+
+    public static void ReadCallback(IAsyncResult ar)
+    {
+      String content = String.Empty;
+
+      // Retrieve the state object and the handler socket  
+      // from the asynchronous state object.  
+      StateObject state = (StateObject)ar.AsyncState;
+      Socket handler = state.workSocket;
+
+      // Read data from the client socket.   
+      int bytesRead = handler.EndReceive(ar);
+    }
+
+    private void label8_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void button3_Click(object sender, EventArgs e)
+    {
+
+    }
+
+    private void BeginSearchBtn_Click(object sender, EventArgs e)
+    {
+      string searchString = "&";
+      LogBox.Text += "\n Client Searching for:" + SearchBox.Text;
+      BinaryWriter writer = new BinaryWriter(ns);
+
+      searchString += SearchBox.Text;
+      writer.Write(CmdField.Text);
+    }
+  }
 }
 
 // State object for reading client data asynchronously  
