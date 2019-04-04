@@ -197,8 +197,8 @@ namespace NetworkApp
               Serializer.Save("clients.bin", serverClientsList);
             } else if((fileString[0] == '$') && (fileString[1] == '$') && (fileString[2] == '!'))
             {
-              Console.WriteLine("Client Attempting to close!");
-              if(fileString[3] == clNo)
+              Console.WriteLine("Client #"+ clNo +" Attempting to close! " + fileString[3]);
+              if(true)
               {
 
                 Console.WriteLine("Deleting File Records!");
@@ -219,7 +219,7 @@ namespace NetworkApp
                 {
                   serverFileList.Remove(f);
                 }
-                Console.WriteLine("Are the records deleted?");
+                Console.WriteLine("Are the file records deleted?");
 
                 List<ClientInfo> toDisconnect = new List<ClientInfo>();
 
