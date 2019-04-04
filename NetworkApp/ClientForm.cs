@@ -54,6 +54,7 @@ namespace NetworkApp
     byte[] bytes = new byte[1024]; //array of bytes
     int bytesRead; //number of bytes read
     int serverGivenID = -1;
+    Socket listener;
 
     //Folder Browser for files:
     FolderBrowserDialog FBD = new FolderBrowserDialog();
@@ -302,7 +303,7 @@ namespace NetworkApp
       IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Int32.Parse(HostPortBox.Text));
       LogBox.Text += IPAddress.Parse(((IPEndPoint)localEndPoint).Address.ToString());
       // Create a TCP/IP socket.  
-      Socket listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+      listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
       // Bind the socket to the local endpoint and listen for incoming connections.  
       try
       {
@@ -374,7 +375,7 @@ namespace NetworkApp
       LogBox.Text += "\n Client Searching for:" + SearchBox.Text;
       BinaryWriter writer = new BinaryWriter(ns);
 
-      searchString += "$"+SearchBox.Text;
+      searchString += "@"+SearchBox.Text;
       writer.Write(searchString);
     }
 
@@ -396,6 +397,8 @@ namespace NetworkApp
       FBD.Dispose();
       client.Close();
       ns.Close();
+      //listener.Close();
+      
     }
   }
 }

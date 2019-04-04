@@ -128,7 +128,7 @@ namespace NetworkApp
             fileString = reader.ReadString();
             Console.WriteLine("***"+fileString);
 
-            if(fileString[0] == '$')
+            if(fileString[0] == '@')
             {
               string keyWord = fileString.Substring(1);
               DeserializeServerList("server.bin");
