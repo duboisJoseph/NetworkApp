@@ -24,8 +24,6 @@ namespace NetworkApp
 
     int cmdCt = 0; //an identifier that increments for each command/message sent to the clients
 
-    SharedArray<byte> producer; //Shared memory array write to this to communicate with child threads.
-
     List<FileStruct> serverFileList = new List<FileStruct>(); //List of files from server.
     List<ClientInfo> clientsList = new List<ClientInfo>();
 
@@ -53,6 +51,14 @@ namespace NetworkApp
       server = new TcpListener(localAddr, portNum);
 
       FileStruct serverFile = new FileStruct("baseFile", "initPurposes", -99, -99);
+      ClientInfo serverInfo = new ClientInfo(-99);
+      serverInfo.portNum = portNum;
+      serverInfo.ipAddr = "127.0.0.1";
+      serverInfo.dnsName = "localhost";
+      serverInfo.connType = "server";
+
+      clientsList.Add(serverInfo);
+      Serializer.Save("clients.bin", clientsList);
       serverFileList.Add(serverFile);
       Serializer.Save("server.bin", serverFileList);
 
@@ -63,72 +69,68 @@ namespace NetworkApp
     {
       bool running = true;
 
-      using (producer = new SharedArray<byte>("ParentToChildCmdArray", 40))
+     
+      //server begins listening for connections
+      server.Start();
+      while (running)
       {
-        //server begins listening for connections
-        server.Start();
-        while (running)
+
+        if (cmdCt > 1000000)
         {
+          Console.WriteLine("\n" + "."); //output to server log.
+          cmdCt = 0;
 
-          if (cmdCt > 1000000)
+          DeserializeServerList("server.bin");
+          Console.WriteLine("Known Files:");
+          foreach(FileStruct f in serverFileList)
           {
-            Console.WriteLine("\n" + "."); //output to server log.
-            cmdCt = 0;
-
-            DeserializeServerList("server.bin");
-            Console.WriteLine("Known Files:");
-            foreach(FileStruct f in serverFileList)
-            {
-              Console.WriteLine("ID: " + f.GetID() + " FileName: " + f.GetFileName() + " Desc:" + f.GetFileDesc() + " OwnerID: " + f.GetOwner() + " :end");
-            }
+            Console.WriteLine("ID: " + f.GetID() + " FileName: " + f.GetFileName() + " Desc:" + f.GetFileDesc() + " OwnerID: " + f.GetOwner() + " :end");
           }
-          cmdCt++;
+        }
+        cmdCt++;
 
-          try
+        try
+        {
+          //Console.WriteLine("Waiting for connections..."); //output to server log.
+
+          if (server.Pending()) //if there is a client trying to connect to the server
           {
-            //Console.WriteLine("Waiting for connections..."); //output to server log.
+            TcpClient clientSocket; //create a TCP client object
+            Console.WriteLine("Client Connecting");
+            clientSocket = server.AcceptTcpClient(); //accept the client connection
+            clientSocket.ReceiveBufferSize = 8192;   //Set buffer size 
+            clientSocket.SendBufferSize = 8192;      //Set buffer size
 
-            if (server.Pending()) //if there is a client trying to connect to the server
+            if (clientSocket != null) //if client connection was succssessful
             {
-              TcpClient clientSocket; //create a TCP client object
-              Console.WriteLine("Client Connecting");
-              clientSocket = server.AcceptTcpClient(); //accept the client connection
-              clientSocket.ReceiveBufferSize = 8192;   //Set buffer size 
-              clientSocket.SendBufferSize = 8192;      //Set buffer size
-
-              if (clientSocket != null) //if client connection was succssessful
+              Console.WriteLine("Client Connected");
+              for (int i = 0; i < max_connections; i++) //find an open client ID int TODO: in this loop we could update the server's table of clients table with client information
               {
-                Console.WriteLine("Client Connected");
-                for (int i = 0; i < max_connections; i++) //find an open client ID int TODO: in this loop we could update the server's table of clients table with client information
+                if (connectedIDs[i] < 1) //if id not taken 
                 {
-                  if (connectedIDs[i] < 1) //if id not taken 
-                  {
-                    ClientInfo info = new ClientInfo(i);
-                    clientsList.Add(info);
-                    connectedIDs[i] = 1;//mark that ID as taken
+                  ClientInfo info = new ClientInfo(i);
+                  clientsList.Add(info);
+                  connectedIDs[i] = 1;//mark that ID as taken
 
-                    HandleClient client = new HandleClient(); //create new client handler
+                  HandleClient client = new HandleClient(); //create new client handler
 
-                    byte[] cmd = System.Text.Encoding.ASCII.GetBytes("!" + "Connected to Server");
+                  byte[] cmd = System.Text.Encoding.ASCII.GetBytes("!" + "Connected to Server");
 
-                    int j = 0;
-                    foreach (byte b in cmd) { producer[i] = b; j++; }
-
-                    Console.WriteLine("Client #" + i + "Connected");
-                    client.StartClient(clientSocket, i); //start new client handler with the socket connection and the client ID i
-                    break;
-                  }
+                  Console.WriteLine("Client #" + i + "Connected");
+                  client.StartClient(clientSocket, i); //start new client handler with the socket connection and the client ID i
+                  break;
                 }
               }
             }
           }
-          catch (Exception z)
-          {
-            Console.WriteLine(z.ToString());
-          }
-          Application.DoEvents();
         }
+        catch (Exception z)
+        {
+          Console.WriteLine(z.ToString());
+        }
+        Application.DoEvents();
       }
+      
     }
 
     //Seralizes the server's file list for sending to client.

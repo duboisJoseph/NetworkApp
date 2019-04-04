@@ -10,7 +10,7 @@
  * that the server periodically will broadcast to all threads. Essentially we will probably have copies of the client table and file table in each 
  * HandleClient object. Or this class could pass on their requests to the main server thread. 
  * 
- * TODO: This class currently is able to recive data from the main server thread but can't send data to the main server thread. 
+ *  
  * 
  * 
  */
@@ -108,94 +108,91 @@ namespace NetworkApp
       networkStream = clientSocket.GetStream();
 
       bool msgToSend = true;  
-                      
-      using (var consumer = new SharedMemory.SharedArray<byte>("ParentToChildCmdArray"))
+                        
+      while (keepLiving)
       {
-        while (keepLiving)
-        {
-          byte[] cmd = new byte[40];
+        byte[] cmd = new byte[40];
 
-          serverResponse = "Connection Established" + DateTime.Now.ToString(); //Set Value of first message to send to client
+        serverResponse = "Connection Established" + DateTime.Now.ToString(); //Set Value of first message to send to client
          
-          if(networkStream.CanRead)
+        if(networkStream.CanRead)
+        {
+          string fileString = "";
+          while (networkStream.DataAvailable)
           {
-            string fileString = "";
-            while (networkStream.DataAvailable)
+            BinaryReader reader = new BinaryReader(networkStream);
+            fileString = reader.ReadString();
+            Console.WriteLine(fileString);
+
+            if(fileString[0] == '#')
             {
-              BinaryReader reader = new BinaryReader(networkStream);
-              fileString = reader.ReadString();
-              Console.WriteLine(fileString);
-
-              if(fileString[0] == '#')
+              string[] encodedFiles = fileString.Split('#');
+              int i = 0;
+              foreach (string s in encodedFiles)
               {
-                string[] encodedFiles = fileString.Split('#');
-                int i = 0;
-                foreach (string s in encodedFiles)
+                if(i > 0)
                 {
-                  if(i > 0)
-                  {
-                    FileStruct f = new FileStruct(s);
-                    fileList.Add(f);
-                  }
-                  i++;
+                  FileStruct f = new FileStruct(s);
+                  fileList.Add(f);
                 }
-                DeserializeServerList("server.bin");
+                i++;
+              }
+              DeserializeServerList("server.bin");
 
-                foreach (FileStruct f in fileList)
+              foreach (FileStruct f in fileList)
+              {
+                bool existsInServer = false;
+                foreach (FileStruct onServ in serverFileList)
                 {
-                  bool existsInServer = false;
-                  foreach (FileStruct onServ in serverFileList)
-                  {
 
-                    if ((f.GetID() == onServ.GetID()) && (f.GetOwner() == onServ.GetOwner()))
-                    {
-                      existsInServer = true;
-                    }
-                  }
-                  if (!existsInServer)
+                  if ((f.GetID() == onServ.GetID()) && (f.GetOwner() == onServ.GetOwner()))
                   {
-                    serverFileList.Add(f);
-                    Console.WriteLine("Adding: "+ f.ToString() + " to server fileList");
+                    existsInServer = true;
                   }
                 }
-                Serializer.Save("server.bin", serverFileList);
+                if (!existsInServer)
+                {
+                  serverFileList.Add(f);
+                  Console.WriteLine("Adding: "+ f.ToString() + " to server fileList");
+                }
               }
-              else
-              {
-                serverResponse = "To Client: Server Recived cmd: [" + fileString + "]";
-                msgToSend = true;
-              }
+              Serializer.Save("server.bin", serverFileList);
             }
-            networkStream.Flush();
+            else
+            {
+              serverResponse = "To Client: Server Recived cmd: [" + fileString + "]";
+              msgToSend = true;
+            }
           }
-          if (msgToSend)
+          networkStream.Flush();
+        }
+        if (msgToSend)
+        {
+          try
           {
-            try
+            /*Code handles sending messages to client*/
+            serverResponse = "id"+clNo+"From server to client ( " + clNo + " ): " + serverResponse;
+            sendBytes = Encoding.ASCII.GetBytes(serverResponse);
+            if (networkStream.CanWrite)
             {
-              /*Code handles sending messages to client*/
-              serverResponse = "id"+clNo+"From server to client ( " + clNo + " ): " + serverResponse;
-              sendBytes = Encoding.ASCII.GetBytes(serverResponse);
-              if (networkStream.CanWrite)
-              {
-                 networkStream.Write(sendBytes, 0, sendBytes.Length);
-              }
-              else
-              {
-                 Console.WriteLine("Client Handler #" + clNo + " can't write");
-              }
-              if (!keepLiving)
-              {
-                clientSocket.Close(); //close socket
-                networkStream.Close();//close data stream (allows for garbage collection)
-              }
+                networkStream.Write(sendBytes, 0, sendBytes.Length);
             }
-            catch (Exception ex)
+            else
             {
-              clientSocket.Close();
-              networkStream.Close();
+                Console.WriteLine("Client Handler #" + clNo + " can't write");
             }
-            msgToSend = false; //set to false so message is only sent once.
+            if (!keepLiving)
+            {
+              clientSocket.Close(); //close socket
+              networkStream.Close();//close data stream (allows for garbage collection)
+            }
           }
+          catch (Exception ex)
+          {
+            clientSocket.Close();
+            networkStream.Close();
+          }
+          msgToSend = false; //set to false so message is only sent once.
         }
       }
       this.ctThread.Abort();

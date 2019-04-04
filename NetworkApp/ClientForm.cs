@@ -19,12 +19,14 @@
  * Accept user defined IP address and Port number
  * Accept user defined commands.
  * Create a list of file descriptions (for example a file called "filelist.xml")
+ * Access its host file system.
+ * Send commands to the server
  * 
  * Things it can not currently do (and needs to do):
- * Send commands to the server
+ * 
  * P2P connect with another client
  * Host a P2P relation ship with another client.
- * Access its host file system.
+ * 
  * Keyword search from the set of all other clients files.
  * Get a file from another peer client (P2P ftp transfer)
  */
