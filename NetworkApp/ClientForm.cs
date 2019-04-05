@@ -300,32 +300,32 @@ namespace NetworkApp
 
     public void StartListening()
     {
-        //Establish the local end point for the socket. DNS name of the computer, running the listener is our IP
-        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
-        IPAddress ipAddress;
-        IPAddress.TryParse("127.0.0.1", out ipAddress);
-        //IPAddress ipAddress = ipHostInfo.AddressList[0];
-        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Int32.Parse(HostPortBox.Text));
+      //Establish the local end point for the socket. DNS name of the computer, running the listener is our IP
+      IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+      IPAddress ipAddress;
+      IPAddress.TryParse("127.0.0.1", out ipAddress);
+      //IPAddress ipAddress = ipHostInfo.AddressList[0];
+      IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Int32.Parse(HostPortBox.Text));
 
-        //Create our client server:
-        LogBox.Text += IPAddress.Parse(((IPEndPoint)localEndPoint).Address.ToString());
-        LogBox.Text += ":" + HostPortBox.Text;
+      //Create our client server:
+      LogBox.Text += IPAddress.Parse(((IPEndPoint)localEndPoint).Address.ToString());
+      LogBox.Text += ":" + HostPortBox.Text;
 
-        // Create a TCP/IP socket.  
-        listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        // Bind the socket to the local endpoint and listen for incoming connections.  
-        try
-        {
-            listener.Blocking = false;
-            listener.Bind(localEndPoint);
-            listener.Listen(100);
-            LogBox.Text += "\n Listening...";
-            performListen(listener);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-        }
+      // Create a TCP/IP socket.  
+      listener = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+      // Bind the socket to the local endpoint and listen for incoming connections.  
+      try
+      {
+        listener.Blocking = false;
+        listener.Bind(localEndPoint);
+        listener.Listen(100);
+        LogBox.Text += "\n Listening...";
+        performListen(listener);
+      }
+      catch (Exception e)
+      {
+          Console.WriteLine(e.ToString());
+      }
     }
 
     private void performListen(Socket listener)
@@ -336,117 +336,117 @@ namespace NetworkApp
 
     private void AcceptCallback(IAsyncResult ar)
     {
-        // Get the socket that handles the client request
-        Socket listener = (Socket)ar.AsyncState;
-        Socket handler = listener.EndAccept(ar);
-        Handler = handler;
+      // Get the socket that handles the client request
+      Socket listener = (Socket)ar.AsyncState;
+      Socket handler = listener.EndAccept(ar);
+      Handler = handler;
 
-        // Create the state object
-        StateObject state = new StateObject();
-        state.workSocket = handler;
-        handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
-        LogBox.Text += "\n Successful connection between Client P2P";
+      // Create the state object
+      StateObject state = new StateObject();
+      state.workSocket = handler;
+      handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
+      LogBox.Text += "\n Successful connection between Client P2P";
     }
 
-        public void ReadCallback(IAsyncResult ar)
+    public void ReadCallback(IAsyncResult ar)
+    {
+      String content = String.Empty;
+
+      // Retrieve the state object and the handler socket  
+      // from the asynchronous state object.  
+      StateObject state = (StateObject)ar.AsyncState;
+      Socket handler = state.workSocket;
+
+      // Read data from the client socket.   
+      int bytesRead = handler.EndReceive(ar);
+
+      if (bytesRead > 0)
+      {
+        // There  might be more data, so store the data received so far.  
+        state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
+
+        // Check for end-of-file tag. If it is not there, read   
+        // more data.  
+        content = state.sb.ToString();
+        if (content.IndexOf("<EOF>") > -1)
         {
-            String content = String.Empty;
-
-            // Retrieve the state object and the handler socket  
-            // from the asynchronous state object.  
-            StateObject state = (StateObject)ar.AsyncState;
-            Socket handler = state.workSocket;
-
-            // Read data from the client socket.   
-            int bytesRead = handler.EndReceive(ar);
-
-            if (bytesRead > 0)
-            {
-                // There  might be more data, so store the data received so far.  
-                state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-
-                // Check for end-of-file tag. If it is not there, read   
-                // more data.  
-                content = state.sb.ToString();
-                if (content.IndexOf("<EOF>") > -1)
-                {
-                    // All the data has been read from the   
-                    // client. Display it on the console.  
-                    Console.WriteLine("Read {0} bytes from socket. \n Data : {1}", content.Length, content);
-                    // Echo the data back to the client.  
-                    Send(handler, content);
-                }
-                else
-                {
-                    // Not all data received. Get more.  
-                    handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
-                    new AsyncCallback(ReadCallback), state);
-                }
-            }
+          // All the data has been read from the   
+          // client. Display it on the console.  
+          Console.WriteLine("Read {0} bytes from socket. \n Data : {1}", content.Length, content);
+          // Echo the data back to the client.  
+          Send(handler, content);
         }
-
-        public void CloseNode(bool acceptMoreConnections)
+        else
         {
-            try
-            {
-                if (Handler != null)
-                {
-                    Handler.Shutdown(SocketShutdown.Both);
-                    Handler.Close();
-                    Handler.Dispose();
-                    Handler = null;
-                }
-                if (acceptMoreConnections)
-                    performListen(listener);
-            }
-            catch (Exception e)
-            {
-
-            }
+          // Not all data received. Get more.  
+          handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+          new AsyncCallback(ReadCallback), state);
         }
+      }
+    }
 
-        public void Send(Socket client, String data)
+    public void CloseNode(bool acceptMoreConnections)
+    {
+      try
+      {
+        if (Handler != null)
         {
-            // Convert the string data to byte data using ASCII encoding.  
-            byte[] byteData = Encoding.ASCII.GetBytes(data);
-
-            // Begin sending the data to the remote device.  
-            client.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), client);
+          Handler.Shutdown(SocketShutdown.Both);
+          Handler.Close();
+          Handler.Dispose();
+          Handler = null;
         }
+        if (acceptMoreConnections)
+            performListen(listener);
+      }
+      catch (Exception e)
+      {
 
-        public void SendCallback(IAsyncResult ar)
-        {
-            try
-            {
-                // Retrieve the socket from the state object.  
-                Socket handler = (Socket)ar.AsyncState;
+      }
+    }
 
-                // Complete sending the data to the remote device.  
-                int bytesSent = handler.EndSend(ar);
+    public void Send(Socket client, String data)
+    {
+      // Convert the string data to byte data using ASCII encoding.  
+      byte[] byteData = Encoding.ASCII.GetBytes(data);
 
-                LogBox.Text += "\nSent " + bytesSent + " bytes to client.";
+      // Begin sending the data to the remote device.  
+      client.BeginSend(byteData, 0, byteData.Length, 0, new AsyncCallback(SendCallback), client);
+    }
 
-                handler.Shutdown(SocketShutdown.Both);
-                handler.Close();
+    public void SendCallback(IAsyncResult ar)
+    {
+      try
+      {
+        // Retrieve the socket from the state object.  
+        Socket handler = (Socket)ar.AsyncState;
 
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.ToString());
-            }
+        // Complete sending the data to the remote device.  
+        int bytesSent = handler.EndSend(ar);
+
+        LogBox.Text += "\nSent " + bytesSent + " bytes to client.";
+
+        handler.Shutdown(SocketShutdown.Both);
+        handler.Close();
+
+      }
+      catch (Exception e)
+      {
+         Console.WriteLine(e.ToString());
+      }
 
 
-        }
+    }
 
-        private void label8_Click(object sender, EventArgs e)
-        {
+    private void label8_Click(object sender, EventArgs e)
+    {
 
-        }
+    }
 
-        private void button3_Click(object sender, EventArgs e)
-        {
+    private void button3_Click(object sender, EventArgs e)
+    {
 
-        }
+    }
 
     private void BeginSearchBtn_Click(object sender, EventArgs e)
     {
@@ -481,22 +481,22 @@ namespace NetworkApp
       
     }
 
-        private void button3_Click_1(object sender, EventArgs e)
-        {
-            //Start TCP connection between P2P 
-            TcpClient localClient = new TcpClient("127.0.0.1", 3332); //Create client connection to server.
+    private void button3_Click_1(object sender, EventArgs e)
+    {
+      //Start TCP connection between P2P 
+      TcpClient localClient = new TcpClient("127.0.0.1", 3332); //Create client connection to server.
 
-            if (client != null) //if not failed
-            {
-                LogBox.Text += "\n" + "Connection Complete!";//Output to log window
-                p2p = localClient.GetStream(); //connect data stream to client socket       
-            }
-            else
-            {
-                LogBox.Text += "\n" + "Connection Not Found";//Output to log window
-            }
-        }
+      if (client != null) //if not failed
+      {
+        LogBox.Text += "\n" + "Connection Complete!";//Output to log window
+        p2p = localClient.GetStream(); //connect data stream to client socket       
+      }
+      else
+      {
+        LogBox.Text += "\n" + "Connection Not Found";//Output to log window
+      }
     }
+  }
 }
 
 // State object for reading client data asynchronously  
