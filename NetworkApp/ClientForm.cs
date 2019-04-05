@@ -67,10 +67,10 @@ namespace NetworkApp
     private Socket listener;
     public static System.Threading.ManualResetEvent allDone = new System.Threading.ManualResetEvent(false);
 
-    public ClientForm() 
+    public ClientForm()
     {
       InitializeComponent();
-      InitializeTimer(); 
+      InitializeTimer();
       GetLocalClientInformation();
     }
 
@@ -85,7 +85,7 @@ namespace NetworkApp
         // Get the local computer host name.
         localHostInfo.dnsName = Dns.GetHostName();
         localAddress.Text = localHostInfo.dnsName;
-        
+
       }
       catch (SocketException e)
       {
@@ -123,7 +123,7 @@ namespace NetworkApp
         try
         {
           while (ns.DataAvailable)
-          { 
+          {
             bytesRead = ns.Read(bytes, 0, bytes.Length); //read bytes from data stream
             serverGivenID = int.Parse(Encoding.ASCII.GetString(bytes, 2, 1));
             response = Encoding.ASCII.GetString(bytes, 3, bytesRead); //convert bytes to string and output to log window
@@ -149,7 +149,7 @@ namespace NetworkApp
     private void BeginConnectionBtn_Click(object sender, EventArgs e) //Using information in fields connect to the server
     {
       Int32 portNum; //Port number
-      
+
       if (Int32.TryParse(PortEntryField.Text, out portNum)) //if able to parse field entry into a portNum continue
       {
         LogBox.Text += "\n" + "Connecting to " + IPEntryField.Text + ":" + PortEntryField.Text + "...";//Output to log window
@@ -232,7 +232,6 @@ namespace NetworkApp
       Serializer.Save("ServerFileList.bin", localFileList);
     }
 
-
     private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
     {
       localHostInfo.connType = comboBox1.Text;
@@ -258,7 +257,7 @@ namespace NetworkApp
       //Post File Data to Server
       string fileString = "";
 
-      foreach(FileStruct f in localFileList)
+      foreach (FileStruct f in localFileList)
       {
         fileString += f.ToString(); //uses overridden toString function
       }
@@ -272,30 +271,48 @@ namespace NetworkApp
       clientInfoString += localHostInfo.ToString();
       writer.Write(clientInfoString);
 
-        LogBox.Text += "\n Opening Connections to other P2P with local machine at : ";
-        StartListening();
+      LogBox.Text += "\n Opening Connections to other P2P with local machine at : ";
+      StartListening();
     }
 
     private void CmdBtn_Click(object sender, EventArgs e)
     {
-      switch (CmdField.Text)
+
+      if (CmdField.Text.Contains("import"))
       {
-        case "encode":
-          {
-            foreach (FileStruct f in localFileList)
-              LogBox.Text += "\n" + f.ToString();
+        string[] cmdParams = CmdField.Text.Split(' ');
+
+        if(cmdParams.Length == 4)
+        {
+          getFileFromPeer(cmdParams[2], int.Parse(cmdParams[3]), cmdParams[1]);
+        } else
+        {
+          foreach(string s in cmdParams)
+            Console.WriteLine(">>> " + s + " <<<");
+        }
+        
+      }
+      else
+      {
+        switch (CmdField.Text)
+        {
+          case "encode":
+            {
+              foreach (FileStruct f in localFileList)
+                LogBox.Text += "\n" + f.ToString();
+              break;
+            }
+          case "decode": //command I use to test stuff to test decoding sent strings
+            {
+              break;
+            }
+          default:
+            LogBox.Text += "\n Client:" + CmdField.Text;
+            BinaryWriter writer = new BinaryWriter(ns);
+            writer.Write(CmdField.Text);
             break;
-          }
-        case "decode": //command I use to test stuff to test decoding sent strings
-          {
-            break;
-          }
-        default:
-          LogBox.Text += "\n Client:" + CmdField.Text;
-          BinaryWriter writer = new BinaryWriter(ns);
-          writer.Write(CmdField.Text);
-          break;
-      }  
+        }
+      }
     }
 
     public void StartListening()
@@ -303,7 +320,7 @@ namespace NetworkApp
       //Establish the local end point for the socket. DNS name of the computer, running the listener is our IP
       IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
       IPAddress ipAddress;
-      IPAddress.TryParse("127.0.0.1", out ipAddress);
+      IPAddress.TryParse(HostIpBox.Text, out ipAddress);
       //IPAddress ipAddress = ipHostInfo.AddressList[0];
       IPEndPoint localEndPoint = new IPEndPoint(ipAddress, Int32.Parse(HostPortBox.Text));
 
@@ -324,15 +341,14 @@ namespace NetworkApp
       }
       catch (Exception e)
       {
-          Console.WriteLine(e.ToString());
+        Console.WriteLine(e.ToString());
       }
     }
 
     private void performListen(Socket listener)
     {
-        listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
+      listener.BeginAccept(new AsyncCallback(AcceptCallback), listener);
     }
-
 
     private void AcceptCallback(IAsyncResult ar)
     {
@@ -397,7 +413,7 @@ namespace NetworkApp
           Handler = null;
         }
         if (acceptMoreConnections)
-            performListen(listener);
+          performListen(listener);
       }
       catch (Exception e)
       {
@@ -426,13 +442,13 @@ namespace NetworkApp
 
         LogBox.Text += "\nSent " + bytesSent + " bytes to client.";
 
-        handler.Shutdown(SocketShutdown.Both);
-        handler.Close();
+       // handler.Shutdown(SocketShutdown.Both);
+       // handler.Close();
 
       }
       catch (Exception e)
       {
-         Console.WriteLine(e.ToString());
+        Console.WriteLine(e.ToString());
       }
 
 
@@ -455,7 +471,7 @@ namespace NetworkApp
       LogBox.Text += "\n Client Searching for:" + SearchBox.Text;
       BinaryWriter writer = new BinaryWriter(ns);
 
-      searchString += "@"+SearchBox.Text;
+      searchString += "@" + SearchBox.Text;
       writer.Write(searchString);
     }
 
@@ -477,27 +493,44 @@ namespace NetworkApp
       FBD.Dispose();
       client.Close();
       ns.Close();
-      //listener.Close();
-      
+      listener.Close();
+
     }
 
-    private void button3_Click_1(object sender, EventArgs e)
+    private void getFileFromPeer(string IPAddr, int PortNum,string fileName)
     {
       //Start TCP connection between P2P 
-      TcpClient localClient = new TcpClient("127.0.0.1", 3332); //Create client connection to server.
+      TcpClient localClient = new TcpClient(IPAddr, PortNum); //Create client connection to server.
 
       if (client != null) //if not failed
       {
         LogBox.Text += "\n" + "Connection Complete!";//Output to log window
-        p2p = localClient.GetStream(); //connect data stream to client socket       
+        p2p = localClient.GetStream(); //connect data stream to client socket
+
+       // here is where we would get use the file name to get the file.
+       // if (fileName != "doNothing")
+       // {
+       //   p2p.Flush();
+       //   LogBox.Text += "\n Getting " + fileName + " from:" + IPAddr + ":" + PortNum;
+       //   BinaryWriter writer = new BinaryWriter(p2p);
+
+       //   writer.Write(fileName);
+       // }
       }
       else
       {
         LogBox.Text += "\n" + "Connection Not Found";//Output to log window
       }
     }
+
+    private void button3_Click_1(object sender, EventArgs e)
+    {
+      getFileFromPeer("127.0.0.1", 3332, "doNothing");
+      //Download("C:/Users/joe/Desktop/Saved Pictures/Stills","Jabba.jpg");
+    }
   }
 }
+
 
 // State object for reading client data asynchronously  
 public class StateObject
