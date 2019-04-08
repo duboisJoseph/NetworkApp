@@ -49,7 +49,7 @@
       this.label2 = new System.Windows.Forms.Label();
       this.label4 = new System.Windows.Forms.Label();
       this.localAddress = new System.Windows.Forms.TextBox();
-      this.textBox4 = new System.Windows.Forms.TextBox();
+      this.HostNameBox = new System.Windows.Forms.TextBox();
       this.label5 = new System.Windows.Forms.Label();
       this.comboBox1 = new System.Windows.Forms.ComboBox();
       this.label3 = new System.Windows.Forms.Label();
@@ -62,7 +62,6 @@
       this.BeginHostBtn = new System.Windows.Forms.Button();
       this.SearchResultsBox = new System.Windows.Forms.RichTextBox();
       this.label8 = new System.Windows.Forms.Label();
-      this.button3 = new System.Windows.Forms.Button();
       this.BeginSearchBtn = new System.Windows.Forms.Button();
       ((System.ComponentModel.ISupportInitialize)(this.fileInformationGrid)).BeginInit();
       this.SuspendLayout();
@@ -84,6 +83,7 @@
       this.IPEntryField.Name = "IPEntryField";
       this.IPEntryField.Size = new System.Drawing.Size(235, 20);
       this.IPEntryField.TabIndex = 1;
+      this.IPEntryField.Text = "127.0.0.1";
       // 
       // IPEntryLbl
       // 
@@ -101,6 +101,7 @@
       this.PortEntryField.Name = "PortEntryField";
       this.PortEntryField.Size = new System.Drawing.Size(51, 20);
       this.PortEntryField.TabIndex = 3;
+      this.PortEntryField.Text = "3333";
       // 
       // PortEntryLbl
       // 
@@ -258,12 +259,12 @@
       this.localAddress.Size = new System.Drawing.Size(187, 20);
       this.localAddress.TabIndex = 20;
       // 
-      // textBox4
+      // HostNameBox
       // 
-      this.textBox4.Location = new System.Drawing.Point(337, 13);
-      this.textBox4.Name = "textBox4";
-      this.textBox4.Size = new System.Drawing.Size(143, 20);
-      this.textBox4.TabIndex = 23;
+      this.HostNameBox.Location = new System.Drawing.Point(337, 13);
+      this.HostNameBox.Name = "HostNameBox";
+      this.HostNameBox.Size = new System.Drawing.Size(143, 20);
+      this.HostNameBox.TabIndex = 23;
       // 
       // label5
       // 
@@ -288,7 +289,7 @@
       this.comboBox1.Name = "comboBox1";
       this.comboBox1.Size = new System.Drawing.Size(107, 21);
       this.comboBox1.TabIndex = 25;
-      this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+      this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.ComboBox1_SelectedIndexChanged);
       // 
       // label3
       // 
@@ -380,16 +381,6 @@
       this.label8.TabIndex = 35;
       this.label8.Text = "Search Result:";
       // 
-      // button3
-      // 
-      this.button3.Location = new System.Drawing.Point(395, 592);
-      this.button3.Name = "button3";
-      this.button3.Size = new System.Drawing.Size(95, 23);
-      this.button3.TabIndex = 36;
-      this.button3.Text = "Download File";
-      this.button3.UseVisualStyleBackColor = true;
-      this.button3.Click += new System.EventHandler(this.button3_Click_1);
-      // 
       // BeginSearchBtn
       // 
       this.BeginSearchBtn.Location = new System.Drawing.Point(373, 449);
@@ -406,7 +397,6 @@
       this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
       this.ClientSize = new System.Drawing.Size(502, 675);
       this.Controls.Add(this.BeginSearchBtn);
-      this.Controls.Add(this.button3);
       this.Controls.Add(this.label8);
       this.Controls.Add(this.SearchResultsBox);
       this.Controls.Add(this.BeginHostBtn);
@@ -419,7 +409,7 @@
       this.Controls.Add(this.label3);
       this.Controls.Add(this.comboBox1);
       this.Controls.Add(this.label5);
-      this.Controls.Add(this.textBox4);
+      this.Controls.Add(this.HostNameBox);
       this.Controls.Add(this.localAddress);
       this.Controls.Add(this.label4);
       this.Controls.Add(this.label2);
@@ -467,7 +457,7 @@
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.Label label4;
     private System.Windows.Forms.TextBox localAddress;
-    private System.Windows.Forms.TextBox textBox4;
+    private System.Windows.Forms.TextBox HostNameBox;
     private System.Windows.Forms.Label label5;
     private System.Windows.Forms.ComboBox comboBox1;
     private System.Windows.Forms.Label label3;
@@ -483,7 +473,6 @@
     private System.Windows.Forms.DataGridViewTextBoxColumn FileLocation;
         private System.Windows.Forms.RichTextBox SearchResultsBox;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Button button3;
     private System.Windows.Forms.Button BeginSearchBtn;
   }
 }
